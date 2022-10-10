@@ -64,7 +64,7 @@ class scalar_k(object):
         #target_T -> if with_gripper is False, matrix T of wrist3 in shoulder frame else a list of two T matrices of toe1 and toe2
         #is_first_ik : if you don't have previous angles, set it to be True, else set it to be False
         #              if there's no previous angles, there would be some restriction for the situation: the initial position of the end effector can not be folded back to the shoulder, q11 -90 to 90 degrees and q21 0 to 180 degrees
-        #prev_angles -> [shoulder angle, q11, q21, wrist1, wrist2, wrist3]*4 legs, totally a list of 24 numbers
+        #prev_angles -> [shoulder angle, q11, q21, wrist1, wrist2, wrist3]
         #with_body -> if True the input matrix(matrice) is in body frame else in shoulder frame
         #with_gripper -> if True consider gripper as the end effector
 
@@ -72,6 +72,13 @@ class scalar_k(object):
 
         #output:
         #joint angles -> [shoulder angle, q11, q21, wrist1, wrist2, wrist3] if with_gripper is False else [[shoulder angle, q11, q21, wrist1, wrist2, wrist3], L_actuator, theta_actuator]
+
+
+        new_prev_angles = np.array([0,0,np.pi/2,0,0,0,  0,0,np.pi/2,0,0,0,  0,0,np.pi/2,0,0,0,  0,0,np.pi/2,0,0,0])
+
+        if not prev_angles is None:
+            new_prev_angles = np.zeros(24, dtype=np.float32)
+            new_prev_angles[which_leg*6:which_leg*6+6] = prev_angles
 
         if with_gripper==False:
 
@@ -84,7 +91,7 @@ class scalar_k(object):
 
             quaternion_state = util.rotation_matrix_2_quaternion(T_shi_wrist3[0:3,0:3])
 
-            shoulder_angle, q11, q12, q13, q21, q22, qw1, qw2, qw3, phi = self.k_model.leg_ik_direct_calculation_6DoF(T_shi_wrist3[0:3,3].tolist(), quaternion_state, which_leg, is_first_ik = is_first_ik, prev_angles = prev_angles)
+            shoulder_angle, q11, q12, q13, q21, q22, qw1, qw2, qw3, phi = self.k_model.leg_ik_direct_calculation_6DoF(T_shi_wrist3[0:3,3].tolist(), quaternion_state, which_leg, is_first_ik = is_first_ik, prev_angles = new_prev_angles)
 
             return [shoulder_angle, q11, q21, qw1, qw2, qw3]
 
@@ -103,7 +110,7 @@ class scalar_k(object):
             quaternion_state_2 = util.rotation_matrix_2_quaternion(T_toe2[0:3,0:3])
             T_toe2 = T_toe2[0:3,3].tolist() + quaternion_state_2.tolist()
 
-            return self.k_model.leg_gripper_ik(np.array(T_toe1), np.array(T_toe2), body_angle, which_leg, is_first_ik, prev_angles)
+            return self.k_model.leg_gripper_ik(np.array(T_toe1), np.array(T_toe2), body_angle, which_leg, is_first_ik, new_prev_angles)
 
 
     def scalar_forward_kinematics_3DoF(self, which_leg, joint_angles, with_body=False, body_angle = 0.0, output_xyz = False):
@@ -140,7 +147,7 @@ class scalar_k(object):
         #target_xyz -> target xyz position of toe in body/shoulder frame if input_xyz is true else the T matrix
         #is_first_ik : if you don't have previous angles, set it to be True, else set it to be False
         #              if there's no previous angles, there would be some restriction for the situation: the initial position of the end effector can not be folded back to the shoulder, q11 -90 to 90 degrees and q21 0 to 180 degrees
-        #prev_angles -> [shoulder angle, q11, q21]*4 legs, totally a list of 12 numbers
+        #prev_angles -> [shoulder angle, q11, q21]
         #with_body -> if True the input matrix is in body frame else in shoulder frame
 
 
@@ -162,11 +169,8 @@ class scalar_k(object):
         new_prev_angles = np.array([0,0,np.pi/2,0,0,0,  0,0,np.pi/2,0,0,0,  0,0,np.pi/2,0,0,0,  0,0,np.pi/2,0,0,0])
 
         if not prev_angles is None:
-            new_prev_angles = np.zeros(24, dtype=np.flaot32)
-            new_prev_angles[0:3] = prev_angles[0:3]
-            new_prev_angles[6:9] = prev_angles[3:6]
-            new_prev_angles[12:15] = prev_angles[6:9]
-            new_prev_angles[18:21] = prev_angles[9:12]
+            new_prev_angles = np.zeros(24, dtype=np.float32)
+            new_prev_angles[which_leg*6:which_leg*6+3] = prev_angles
 
         sol = self.k_model.leg_ik_direct_calculation_3DoF(T_shi_wrist3[0:3,3].tolist(), which_leg, is_first_ik = is_first_ik, prev_angles = new_prev_angles)
 
@@ -174,7 +178,6 @@ class scalar_k(object):
         
 
         
-
 
 
 
