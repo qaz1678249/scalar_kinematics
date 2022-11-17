@@ -8,7 +8,7 @@ __status__ = "Prototype"
 
 
 import util
-from hardware_constants import consts, list_name_robots
+from hardware_constants import consts
 import numpy as np
 from scipy.optimize import fsolve, root
 from scipy.spatial.transform import Rotation as R
