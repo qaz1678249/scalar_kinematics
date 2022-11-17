@@ -1,6 +1,6 @@
-from SCALER_v2_Leg_6DOF_gripper import Leg
+from .SCALER_v2_Leg_6DOF_gripper import Leg
 import numpy as np
-import util
+from scaler_kin import util
 
 
 

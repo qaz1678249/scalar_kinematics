@@ -14,7 +14,7 @@ with open('requirements.txt') as f:
 
 setup(
     name='SCALER Kinematics',
-    version='0.1',
+    version='0.2',
     description='Scaler kinematics for 3DoF and 6DoF',
     author='Yusuke Tanaka',
     license='LGPLv3',

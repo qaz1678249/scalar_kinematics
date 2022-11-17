@@ -8,10 +8,10 @@ __status__ = "Prototype"
 
 import numpy as np
 
-import utils_SCALER as Scaler_utils
-import util
-from hardware_constants import consts
-from wrap_to_pi import wrap_to_pi
+from scaler_kin import utils_SCALER as Scaler_utils
+from scaler_kin import util
+from .hardware_constants import consts
+from .wrap_to_pi import wrap_to_pi
 from scipy.optimize import fsolve
 
 # robot_name = "SCALER_climbing_6DoF"
