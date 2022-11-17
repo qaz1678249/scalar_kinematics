@@ -8,11 +8,10 @@ __status__ = "Prototype"
 
 import numpy as np
 
-import utils_SCALER as Scaler_utils
-import util
-from hardware_constants import list_name_robots
-from hardware_constants import consts
-from wrap_to_pi import wrap_to_pi
+from scaler_kin import utils_SCALER as Scaler_utils
+from scaler_kin import util
+from .hardware_constants import consts
+from .wrap_to_pi import wrap_to_pi
 from scipy.optimize import fsolve
 
 # robot_name = "SCALER_climbing_6DoF"
@@ -366,7 +365,7 @@ class Leg:
 
         if use_quaternion == True:
             state = np.zeros([7, 1])
-            quaternion_state = util.rotation_matrix_2_quaternion(T_0_gripper_center[0:3,0:3])
+            quaternion_state = util.rotation_matrix_2_quaternion(T_0_gripper_center[0:3, 0:3])
             state[0:3,0] = T_0_gripper_center[0:3,3]
             state[3:7,0] = quaternion_state
             return state
@@ -420,7 +419,7 @@ class Leg:
         x_pos,y_pos,z_pos = state_gripper_center[0], state_gripper_center[1], state_gripper_center[2]
         # We convert quaterninon orientation to 3x3 rotation matrix
         w,x_rot,y_rot,z_rot = state_gripper_center[3], state_gripper_center[4], state_gripper_center[5], state_gripper_center[6]
-        R_BC = util.quaternion_2_rotation_matrix(np.array([w,x_rot,y_rot,z_rot]))
+        R_BC = util.quaternion_2_rotation_matrix(np.array([w, x_rot, y_rot, z_rot]))
         # Create T matrix that specifies the frame from center of gripper to body
         T_BC = np.array([[R_BC[0,0],R_BC[0,1],R_BC[0,2],x_pos],
                         [R_BC[1,0],R_BC[1,1],R_BC[1,2],y_pos],
@@ -470,7 +469,7 @@ class Leg:
         T_shi_0 = np.linalg.inv(T_0_shi)
         T_shi_gripper = np.dot(T_shi_0, T_Gripper_Center_Body)
         shoulder_2_toe_xyz = T_shi_gripper[0:3,3]
-        wrist_quaternion = util.rotation_matrix_2_quaternion(T_shi_gripper[0:3,0:3])
+        wrist_quaternion = util.rotation_matrix_2_quaternion(T_shi_gripper[0:3, 0:3])
 
         if which_leg == -1:
             [shoulder_angle, q11, q12, q13, q21, q22, qw1, qw2, qw3, phi] = \
@@ -1617,7 +1616,7 @@ class Leg:
                                                                                                 use_find_specific_shoulder=True,
                                                                                                 which_leg=whichLeg)
         shoulder_2_toe_xyz = T_Gripper_Center_Body[0:3,3]-shoulder_vertex
-        wrist_quaternion = util.rotation_matrix_2_quaternion(T_Gripper_Center_Body[0:3,0:3])
+        wrist_quaternion = util.rotation_matrix_2_quaternion(T_Gripper_Center_Body[0:3, 0:3])
 
 
         rot_gripper_center_body = T_Gripper_Center_Body[0:3,0:3]

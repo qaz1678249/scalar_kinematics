@@ -1,4 +1,4 @@
-from SCALER_v2_Leg_6DOF_gripper import Leg
+from .SCALER_v2_Leg_6DOF_gripper import Leg
 import numpy as np
 
 my_scalar_k = Leg()

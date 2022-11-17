@@ -1,4 +1,4 @@
-from SCALAR_kinematics import scalar_k
+from .SCALAR_kinematics import scalar_k
 import numpy as np
 from time import perf_counter
 
