@@ -1343,7 +1343,6 @@ class Leg:
                     min_dist = dist
                     sol = current_sol
                     dcase = i
-            print(dcase)
 
 
 
