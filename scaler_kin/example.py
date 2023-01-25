@@ -1,10 +1,10 @@
-from .SCALAR_kinematics import scalar_k
+from .v3.SCALAR_kinematics import scalar_k
 import numpy as np
 from time import perf_counter
 
 my_scalar_k = scalar_k()
 
-joint_angles = [0.1,0.1,np.pi/2-0.1,0.0,0.0,0.0]
+joint_angles = [0.1,0.1,np.pi/2-0.1,0.1,0.1,-0.1]
 which_leg = 0
 
 fk_res = my_scalar_k.scalar_forward_kinematics(which_leg, joint_angles, with_body=True)
@@ -13,6 +13,7 @@ print(fk_res)
 
 ik_res = my_scalar_k.scalar_inverse_kinematics(which_leg, fk_res, with_body=True)
 
+print(ik_res)
 N = int(2e4)
 """
 st = perf_counter()
@@ -29,13 +30,13 @@ print(f"Time per Ik {et/N*1e3} ms")
 print(ik_res)
 """
 
-#fk_res = my_scalar_k.scalar_forward_kinematics(which_leg, joint_angles, with_body=False, with_gripper = True, L_actuator=105, theta_actuator=0)
+fk_res = my_scalar_k.scalar_forward_kinematics(which_leg, joint_angles, with_body=False, with_gripper = True, L_actuator=105, theta_actuator=0)
 
-#print(fk_res)
+print(fk_res)
 
-#ik_res = my_scalar_k.scalar_inverse_kinematics(which_leg, fk_res, with_body=False, with_gripper = True)
+ik_res = my_scalar_k.scalar_inverse_kinematics(which_leg, fk_res, with_body=False, with_gripper = True)
 
-#print(ik_res)
+print(ik_res)
 
 
 joint_angles = [0.1,0.1,np.pi/2-0.1]
