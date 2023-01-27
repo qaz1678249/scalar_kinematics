@@ -5,7 +5,7 @@ from time import perf_counter
 my_scalar_k = scalar_k()
 
 joint_angles = [0.1,0.1,np.pi/2-0.1,0.1,0.1,-0.1]
-which_leg = 0
+which_leg = 1
 
 fk_res = my_scalar_k.scalar_forward_kinematics(which_leg, joint_angles, with_body=True)
 

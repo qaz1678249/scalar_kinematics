@@ -122,15 +122,13 @@ class SCALER_climbing_consts_6DoF_gripper(old_hardware_constants.SCALER_climbing
 
     # Length of the Wrist Link (equivalent to the length of the Gripper offset (z-component) from the Spherical Joint)
     # [units: mm]
-    #TODO: Check with yusuke for this offset
-    L_WRIST = 0
+    L_WRIST = 10
 
     # Length of the Gripper offset (x-component) from the Spherical Joint [units: mm]
-    #TODO: Check with yusuke for this offset
     L_GRIPPER_OFFSET_X = 0
 
     # Length of the Gripper offset (y-component) from the Spherical Joint [units: mm]
-    L_GRIPPER_OFFSET_Y = 104.98
+    L_GRIPPER_OFFSET_Y = 45.85
 
     # Length of the Leg Link 1 (Links from the Top/Bottom Leg Servos to the Elbow Joints). [units: mm]
     L_LEG_LINK_1 = 113.00
@@ -161,8 +159,9 @@ class SCALER_climbing_consts_6DoF_gripper(old_hardware_constants.SCALER_climbing
 
     L_LEG_LINK_A23_A24 = 36.75
 
-    #TODO: Check with yusuke for this offset
-    L_LEG_LINK_A22_WRIST = 215.05
+    L_LEG_LINK_A22_WRIST = 217.53
+    
+    L_WRIST_OFFSET_E = 59.13
 
     LEG_THETA_1_OFF_ANGLE = np.arcsin(L_LEG_LINK_A23_A24 / L_LEG_LINK_2)
 
@@ -176,12 +175,12 @@ class SCALER_climbing_consts_6DoF_gripper(old_hardware_constants.SCALER_climbing
 
     T_wrist_gripper_0and2 = np.array([[ 0, 1, 0, L_GRIPPER_OFFSET_X],
                                       [-1, 0, 0,-L_GRIPPER_OFFSET_Y],
-                                      [ 0, 0, 1, L_WRIST],
+                                      [ 0, 0, 1, -L_WRIST],
                                       [ 0,0, 0,1]])
 
     T_wrist_gripper_1and3 = np.array([[ 0,-1, 0, L_GRIPPER_OFFSET_X],
                                       [ 1, 0, 0, L_GRIPPER_OFFSET_Y],
-                                      [ 0, 0, 1, L_WRIST],
+                                      [ 0, 0, 1, -L_WRIST],
                                       [ 0,0, 0,1]])
 
     T_wrist_gripper_0and2_inv = np.linalg.inv(T_wrist_gripper_0and2)

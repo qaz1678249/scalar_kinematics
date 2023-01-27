@@ -72,6 +72,10 @@ T_wrist_gripper_0and2_inv = robot_consts.T_wrist_gripper_0and2_inv
 
 T_wrist_gripper_1and3_inv = robot_consts.T_wrist_gripper_1and3_inv
 
+
+L_WRIST_OFFSET_E = robot_consts.L_WRIST_OFFSET_E
+
+
 # State Dimension of each Footstep.
 DIM_FOOTSTEP = robot_consts.DIM_FOOTSTEP
 
@@ -143,7 +147,8 @@ class Leg(old_SCALER_v2_Leg_6DOF_gripper.Leg):
                 which_link = 7: frame wrist1 after rotation of qw1
                 which_link = 8: frame wrist2 after rotation of qw2
                 which_link = 9: frame wrist3 after rotation of qw3
-                which_link = 11: frame wrist1 without rotation from frame E
+                which_link = 11: frame 3 dof toe without rotation from frame E
+                which_link = 12: frame wrist1 without rotation from frame E
                 (by default) all the other which_link: frame gripper_center
 
             use_quaternion: (by default)If it is True, the final result of frame gripper_center would be in the format of [posx,posy,posz, qw, qx, qy, qz], but all the other returned links would be T matrix
@@ -312,6 +317,21 @@ class Leg(old_SCALER_v2_Leg_6DOF_gripper.Leg):
 
         if which_link==11:
             return T_0_wrist
+            
+        if which_leg == 0 or which_leg == 2:
+            T_toe3dof_wrist = np.array([[1,0,0,0],
+                                        [0,1,0,0],
+                                        [0,0,1,L_WRIST_OFFSET_E],
+                                        [0,0,0,1]])
+        else:
+            T_toe3dof_wrist = np.array([[1,0,0,0],
+                                        [0,1,0,0],
+                                        [0,0,1,-L_WRIST_OFFSET_E],
+                                        [0,0,0,1]])
+                                        
+        T_0_wrist = np.dot(T_0_wrist, T_toe3dof_wrist)
+        if which_link==12:
+            return T_0_wrist
 
 
         T_wrist_1 = np.array([ [ -np.cos(th4),   np.sin(th4),      0,         0],
@@ -478,6 +498,8 @@ class Leg(old_SCALER_v2_Leg_6DOF_gripper.Leg):
             return
 
         P_shoulder_wrist = T_shoulder_wrist3[0:3,3].reshape(-1)
+        
+        P_shoulder_wrist = Leg.find_wrist_projection_in_shoulder(P_shoulder_wrist, which_leg)
 
         First_3_joint = Leg.leg_ik_direct_calculation_3DoF(P_shoulder_wrist, which_leg, is_first_ik, prev_angles)
 
@@ -495,7 +517,7 @@ class Leg(old_SCALER_v2_Leg_6DOF_gripper.Leg):
 
 
         T_0_shoulder = Leg.leg_fk_direct_calculation(0.0, [shoulder_angle, q11, q21,0,0,0], 0, 1, use_quaternion = False)
-        T_0_wrist = Leg.leg_fk_direct_calculation(0.0, [shoulder_angle, q11, q21,0,0,0], 0, 11, use_quaternion = False)
+        T_0_wrist = Leg.leg_fk_direct_calculation(0.0, [shoulder_angle, q11, q21,0,0,0], 0, 12, use_quaternion = False)
         T_shoulder_wrist = np.dot(np.linalg.inv(T_0_shoulder), T_0_wrist)
 
         T_wrist_wrist3 = np.dot(np.linalg.inv(T_shoulder_wrist), T_shoulder_wrist3)
@@ -615,6 +637,8 @@ class Leg(old_SCALER_v2_Leg_6DOF_gripper.Leg):
         T_shoulder_wrist3[0:3,3] = np.array(shoulder_2_toe_xyz).reshape(-1)
 
         P_shoulder_wrist = T_shoulder_wrist3[0:3,3].reshape(-1)
+        
+        P_shoulder_wrist = Leg.find_wrist_projection_in_shoulder(P_shoulder_wrist, which_leg)
 
         First_3_joint = Leg.leg_ik_direct_calculation_3DoF(P_shoulder_wrist, which_leg, is_first_ik, prev_angles)
 
@@ -632,7 +656,7 @@ class Leg(old_SCALER_v2_Leg_6DOF_gripper.Leg):
 
 
         T_0_shoulder = Leg.leg_fk_direct_calculation(0.0, [shoulder_angle, q11, q21,0,0,0], 0, 1, use_quaternion = False)
-        T_0_wrist = Leg.leg_fk_direct_calculation(0.0, [shoulder_angle, q11, q21,0,0,0], 0, 11, use_quaternion = False)
+        T_0_wrist = Leg.leg_fk_direct_calculation(0.0, [shoulder_angle, q11, q21,0,0,0], 0, 12, use_quaternion = False)
         T_shoulder_wrist = np.dot(np.linalg.inv(T_0_shoulder), T_0_wrist)
 
         T_wrist_wrist3 = np.dot(np.linalg.inv(T_shoulder_wrist), T_shoulder_wrist3)
@@ -653,3 +677,39 @@ class Leg(old_SCALER_v2_Leg_6DOF_gripper.Leg):
         qw3 = np.arctan2(-r_w_31 / np.cos(qw2), -r_w_32 / np.cos(qw2))
         
         return [shoulder_angle, q11, 0, 0, q21, 0, qw1, qw2, qw3, 0]
+        
+    @staticmethod
+    def find_wrist_projection_in_shoulder(pos,which_leg):
+        x = pos[0]
+        y = pos[1]
+        d = L_WRIST_OFFSET_E
+        if which_leg == 0 or which_leg == 2:
+            k = (x*y+np.sqrt(x*x*y*y-(x*x-d*d)*(y*y-d*d)))/(x*x-d*d)
+        else:
+            k = (x*y-np.sqrt(x*x*y*y-(x*x-d*d)*(y*y-d*d)))/(x*x-d*d)
+        F = np.array([[1.0],[k]])
+        P = np.array([[x],[y]])
+        FT = np.transpose(F)
+        FFT = np.dot(F,FT)
+        FTF = np.dot(FT,F)
+        FTF = FTF[0][0]
+        D = np.dot(FFT, P)/FTF
+        return np.array([D[0][0], D[1][0], pos[2]])
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
