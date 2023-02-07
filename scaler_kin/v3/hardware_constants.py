@@ -1,4 +1,4 @@
-import scaler_kin.hardware_constants as old_hardware_constants
+import scaler_kin.v2.hardware_constants as old_hardware_constants
 import numpy as np
 
 

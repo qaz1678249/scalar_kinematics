@@ -1,4 +1,4 @@
-import scaler_kin.SCALER_v2_Leg_6DOF_gripper as old_SCALER_v2_Leg_6DOF_gripper
+import scaler_kin.v2.SCALER_v2_Leg_6DOF_gripper as old_SCALER_v2_Leg_6DOF_gripper
 
 from scaler_kin import utils_SCALER as Scaler_utils
 from scaler_kin import util
