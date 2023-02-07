@@ -8,7 +8,7 @@ __status__ = "Prototype"
 
 
 from scaler_kin import util
-from .hardware_constants import consts
+from .v2.hardware_constants import consts
 import numpy as np
 from scipy.optimize import fsolve, root
 from scipy.spatial.transform import Rotation as R
