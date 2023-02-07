@@ -13,7 +13,7 @@ with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
 setup(
-    name='SCALER Kinematics',
+    name='scaler_kin',
     version='0.3.2',
     description='Scaler kinematics for 3DoF and 6DoF',
     author='Feng Xu, Yusuke Tanaka',
