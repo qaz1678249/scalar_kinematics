@@ -73,12 +73,11 @@ class SCALER_climbing_consts_6DoF(old_hardware_constants.SCALER_climbing_consts_
     # Body
     # 0: Body Posture Motor
 
-    LEG_MASTER_MOTOR_ID = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]
+    LEG_MASTER_MOTOR_ID = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 13, 14, 18, 16, 17, 21, 19, 20, 24, 22, 23]
     LEG_SLAVE_MOTOR_ID = [101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112]
 
     BODY_MOTOR_ID = [0]
-    ALL_MOTOR_ID = LEG_MASTER_MOTOR_ID + LEG_SLAVE_MOTOR_ID + BODY_MOTOR_ID
-    ALL_MOTOR_ID.sort()
+    ALL_MOTOR_ID = BODY_MOTOR_ID + LEG_MASTER_MOTOR_ID + LEG_SLAVE_MOTOR_ID
 
     # TODO: Currently considering one for just one leg
     # Number of Linear Actuators per Leg
@@ -200,8 +199,8 @@ class SCALER_climbing_consts_6DoF(old_hardware_constants.SCALER_climbing_consts_
               1,    # Top Leg Serve Pair
               -1,   # Bottom Leg Servo Pair
               1,   # First Wrist Servo
-              -1,   # Second Wrist Servo
-              1],   # Third Wrist Servo
+              1,   # Second Wrist Servo
+              -1],   # Third Wrist Servo
 
              [1,    # Shoulder Pair (Leg 3)
               -1,   # Top Leg Serve Pair
@@ -214,8 +213,8 @@ class SCALER_climbing_consts_6DoF(old_hardware_constants.SCALER_climbing_consts_
               1,    # Top Leg Serve Pair
               -1,   # Bottom Leg Servo Pair
               1,   # First Wrist Servo
-              -1,   # Second Wrist Servo
-              1]]), # Third Wrist Servo
+              1,   # Second Wrist Servo
+              -1]]), # Third Wrist Servo
 
         'installation_0': np.array(
             [[0.0,  # Identical for a pair of motors
