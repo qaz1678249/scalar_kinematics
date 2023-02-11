@@ -1,6 +1,6 @@
 import scaler_kin.v2.hardware_constants as old_hardware_constants
 import numpy as np
-from scaler_kin.v2.hardware_constants import division_factor, list_name_robots, list_name_fsms, list_name_devices, list_commands, list_interpolation_type, list_getCtrlPoint_fcn
+from scaler_kin.v2.hardware_constants import division_factor, list_name_robots, list_name_fsms, list_name_devices, list_commands, list_interpolation_type, list_getCtrlPoint_fcn, SCALER_walking_consts
 
 class SCALER_climbing_consts_6DoF(old_hardware_constants.SCALER_climbing_consts_6DoF):
     """ Class: SCALER_climbing_consts_6DoF
@@ -570,4 +570,4 @@ class SCALER_climbing_consts_6DoF_gripper(old_hardware_constants.SCALER_climbing
     Tripod_Climb_2Wall_Stiffness_Model_Verification = 10  # This gait is for verification of stiffness model,
     # it lifts leg 1,3,5 on the air
 
-consts = {"SCALER_climbing_6DoF": SCALER_climbing_consts_6DoF, "SCALER_climbing_6DoF_gripper": SCALER_climbing_consts_6DoF_gripper}
+consts = {"SCALER_walking": SCALER_walking_consts, "SCALER_climbing_6DoF": SCALER_climbing_consts_6DoF, "SCALER_climbing_6DoF_gripper": SCALER_climbing_consts_6DoF_gripper}
