@@ -697,7 +697,41 @@ class Leg(old_SCALER_v2_Leg_6DOF_gripper.Leg):
         return np.array([D[0][0], D[1][0], pos[2]])
     
     
-    
+    @staticmethod
+    def leg_ik(shoulder_2_toe_xyz, wrist_quaternion, which_leg=-1):
+        """ Calculate the Inverse Kinematics of the Parallel Leg.
+        This method calculates the inverse kinematics of the parallel leg for the SCALER_v2 given the position of the
+        toe (position of the toe or in our case, the center of the gripper) and the desired wrist orientation.
+        Args:
+            shoulder_2_toe_xyz: Vector in 3D-space (X, Y, Z) from the Shoulder Joint to the desired Toe Position.
+                                [dim: 3 x 1][units: mm]
+            wrist_quaternion: Quaternion (w, x, y, z) that represents the desired wrist orientation with respect to the
+                              Body Frame of SCALER_v2. [dim: 1 x 4]
+            which_leg (optional arg): This is an index variable that specifies which leg we want to find the shoulder
+                                      vertex for. [default value: -1].
+                For SCALER_v1, we have four legs in total. This means that which_leg has the following options
+                which_leg = 0: Leg 1 (Front Right Leg).
+                which_leg = 1: Leg 2 (Back Right Leg).
+                which_leg = 2: Leg 3 (Back Left Leg).
+                which_leg = 3: Leg 4 (Front Left Leg).
+        Returns:
+            shoulder_angle  : Angle of the Shoulder Joint [units: radians]
+            q11             : Angle of the Top Leg Servo Joint [units: radians]
+            q21             : Angle of the Bottom Leg Servo Joint [units: radians]
+            qw1             : Angle of the First Wrist Servo Joint [units: radians]
+            qw2             : Angle of the Second Wrist Servo Joint [units: radians]
+            qw3             : Angle of the Third Wrist Servo Joint [units: radians]
+        """
+        if which_leg == -1:
+            [shoulder_angle, q11, q12, q13, q21, q22, qw1, qw2, qw3, phi] = \
+                Leg.leg_ik_direct_calculation(shoulder_2_toe_xyz, wrist_quaternion)
+        else:
+            [shoulder_angle, q11, q12, q13, q21, q22, qw1, qw2, qw3, phi] = \
+                Leg.leg_ik_direct_calculation(shoulder_2_toe_xyz, wrist_quaternion, which_leg=which_leg)
+
+        joint_angles = [shoulder_angle, q11, q21, qw1, qw2, qw3]
+
+        return wrap_to_pi(joint_angles)   
     
     
     
