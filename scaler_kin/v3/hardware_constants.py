@@ -191,30 +191,30 @@ class SCALER_climbing_consts_6DoF(old_hardware_constants.SCALER_climbing_consts_
             [[1,    # Shoulder Pair (Leg 1)
               -1,   # Top Leg Serve Pair
               1,    # Bottom Leg Servo Pair
-              -1,    # First Wrist Servo
               -1,    # Second Wrist Servo
-              1],   # Third Wrist Servo
+              1,    # Third Wrist Servo
+              -1],   # First Wrist Servo
 
              [1,    # Shoulder Pair (Leg 2)
               1,    # Top Leg Serve Pair
               -1,   # Bottom Leg Servo Pair
-              -1,   # First Wrist Servo
               1,   # Second Wrist Servo
-              -1],   # Third Wrist Servo
+              1,   # Third Wrist Servo
+              1],   # First Wrist Servo
 
              [1,    # Shoulder Pair (Leg 3)
               -1,   # Top Leg Serve Pair
               1,    # Bottom Leg Servo Pair
-              -1,    # First Wrist Servo
               1,    # Second Wrist Servo
-              1],   # Third Wrist Servo
+              1,    # Third Wrist Servo
+              -1],   # First Wrist Servo
 
              [1,    # Shoulder Pair (Leg 4)
               1,    # Top Leg Serve Pair
               -1,   # Bottom Leg Servo Pair
-              -1,   # First Wrist Servo
               -1,   # Second Wrist Servo
-              -1]]), # Third Wrist Servo
+              1,   # Third Wrist Servo
+              1]]), # First Wrist Servo
 
         'installation_0': np.array(
             [[0.0,  # Identical for a pair of motors
