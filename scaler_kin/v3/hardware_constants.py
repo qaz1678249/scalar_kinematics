@@ -1,6 +1,6 @@
 import scaler_kin.v2.hardware_constants as old_hardware_constants
 import numpy as np
-from scaler_kin.v2.hardware_constants import list_name_robots, list_name_fsms, list_name_devices, list_commands, list_interpolation_type, list_getCtrlPoint_fcn
+from scaler_kin.v2.hardware_constants import division_factor, list_name_robots, list_name_fsms, list_name_devices, list_commands, list_interpolation_type, list_getCtrlPoint_fcn
 
 class SCALER_climbing_consts_6DoF(old_hardware_constants.SCALER_climbing_consts_6DoF):
     """ Class: SCALER_climbing_consts_6DoF
