@@ -416,7 +416,7 @@ class Leg:
         state_gripper_center = Leg.leg_fk_direct_calculation(body_angle,theta_angles,which_leg)
 
         # We get the center of gripper position
-        x_pos,y_pos,z_pos = state_gripper_center[0], state_gripper_center[1], state_gripper_center[2]
+        x_pos,y_pos,z_pos = state_gripper_center[0,0], state_gripper_center[1,0], state_gripper_center[2,0]
         # We convert quaterninon orientation to 3x3 rotation matrix
         w,x_rot,y_rot,z_rot = state_gripper_center[3], state_gripper_center[4], state_gripper_center[5], state_gripper_center[6]
         R_BC = util.quaternion_2_rotation_matrix(np.array([w, x_rot, y_rot, z_rot]))

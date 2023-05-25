@@ -253,6 +253,7 @@ class SCALER_climbing_consts_6DoF(old_hardware_constants.SCALER_climbing_consts_
     L_GRIPPER_2D_L_IJ_X = 116
     L_GRIPPER_2D_L_IJ_Y = 8
 
+    L_GRIPPER_2D_L0 = 8.0
     L_GRIPPER_2D_L1 = 116
 
     L_GRIPPER_2D_L2 = 37.24
@@ -535,6 +536,7 @@ class SCALER_climbing_consts_6DoF_gripper(old_hardware_constants.SCALER_climbing
     L_GRIPPER_2D_L_IJ_X = 116
     L_GRIPPER_2D_L_IJ_Y = 8
 
+    L_GRIPPER_2D_L0 = 8.0
     L_GRIPPER_2D_L1 = 116
 
     L_GRIPPER_2D_L2 = 37.24
