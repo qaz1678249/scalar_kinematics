@@ -1334,7 +1334,7 @@ class Leg:
 
             min_dist = 2147483647.0
             dcase = 0
-            for i in range(4):
+            for i in range(1):
                 current_sol = Leg.leg_ik_2DoF(P_A[1, 0], P_A[0, 0], i, init_guess = prev_q11q21)
                 current_sol = np.array(wrap_to_pi(np.array([current_sol[0], current_sol[1]]))).reshape(-1)
                 dist = np.linalg.norm(current_sol-prev_q11q21)

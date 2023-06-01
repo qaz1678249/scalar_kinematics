@@ -427,9 +427,10 @@ class Leg(old_SCALER_v2_Leg_6DOF_gripper.Leg):
         w,x_rot,y_rot,z_rot = state_gripper_center[3], state_gripper_center[4], state_gripper_center[5], state_gripper_center[6]
         R_BC = util.quaternion_2_rotation_matrix(np.array([w, x_rot, y_rot, z_rot]))
         # Create T matrix that specifies the frame from center of gripper to body
-        T_BC = np.array([[R_BC[0,0],R_BC[0,1],R_BC[0,2],x_pos],
-                        [R_BC[1,0],R_BC[1,1],R_BC[1,2],y_pos],
-                        [R_BC[2,0],R_BC[2,1],R_BC[2,2],z_pos],
+        R_BC = R_BC.reshape(3,3)
+        T_BC = np.array([[R_BC[0,0],R_BC[0,1],R_BC[0,2],x_pos[0]],
+                        [R_BC[1,0],R_BC[1,1],R_BC[1,2],y_pos[0]],
+                        [R_BC[2,0],R_BC[2,1],R_BC[2,2],z_pos[0]],
                         [0,0,0,1]], dtype=np.float32)
 
         # We get the T matrix for fingertip position and orientation of fingertip 1 and fingertip 2 in
@@ -696,12 +697,6 @@ class Leg(old_SCALER_v2_Leg_6DOF_gripper.Leg):
         D = np.dot(FFT, P)/FTF
         return np.array([D[0][0], D[1][0], pos[2]])
 
-    
-    
-    
-    
-    
-    
     
     
     
