@@ -57,11 +57,11 @@ print(ik_res)
 
 
 
-from SCALAR_kinematics import scalar_k
+from SCALAR_kinematics import scaler_k
 import numpy as np
 from time import perf_counter
 
-my_scalar_k = scalar_k()
+my_scalar_k = scaler_k()
 
 joint_angles = [0.2,0.3,np.pi/2,-0.5,1.1, -1.8]
 which_leg = 0
