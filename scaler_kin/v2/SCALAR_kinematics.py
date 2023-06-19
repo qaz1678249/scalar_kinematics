@@ -4,7 +4,7 @@ from scaler_kin import util
 
 
 
-class scalar_k(object):
+class scaler_k(object):
     def __init__(self):
         self.k_model = Leg()
 
@@ -145,7 +145,7 @@ class scalar_k(object):
         #inputs:
         #which_leg -> leg index 0-3
         #target_xyz -> target xyz position of toe in body/shoulder frame if input_xyz is true else the T matrix
-        #is_first_ik : if you don't have previous angles, set it to be True, else set it to be False
+        #is_first_ik : if you don't have previous anglscaler_kes, set it to be True, else set it to be False
         #              if there's no previous angles, there would be some restriction for the situation: the initial position of the end effector can not be folded back to the shoulder, q11 -90 to 90 degrees and q21 0 to 180 degrees
         #prev_angles -> [shoulder angle, q11, q21]
         #with_body -> if True the input matrix is in body frame else in shoulder frame
