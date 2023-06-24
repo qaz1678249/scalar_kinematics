@@ -88,7 +88,7 @@ class SCALER_walking_consts:
     """
     # Length of the center parallel link (i.e., the Battery Link which is always parallel to the two Rigid Body Links)
     # [units: mm]
-    L_BATTERY = 100
+    L_BATTERY = 150
 
     # Length of the two parallel Body Links (i.e., the Body Links that change the body posture). [units: mm]
     L_BL = 100
@@ -96,7 +96,8 @@ class SCALER_walking_consts:
     # Length from the Posture Joints to the Rigid Body Link (Measurement along the Y Body Frame axis) and the Length
     # from the Rigid Body Link to the Shoulder Joint (Measurement along the X Body Frame axis). In summary, this Length
     # produces a Rigid Body (L-Shaped) Structure connecting the Posture Joint to the Shoulder Joint. [units: mm]
-    L_S2RB = 85.5
+    L_S2RBx = 86
+    L_S2RBy = 69
 
     # Leg numbers
     RIGHT_FRONT = 0
@@ -108,9 +109,8 @@ class SCALER_walking_consts:
 
     NUM_OF_LEGS = len(LEG_NUM)
 
+    # TODO: Update the Motor ID to accommodate 6-DoF [lines 470-515]
     # MOTOR_ID: Assigned Motor ID's for the Dynamixel Motors
-    # ID Numbers: [  0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,
-    #                   101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112]
 
     # Leg 1
     # (1, 101): Right Front (Shoulder Motor (Pair))
@@ -137,45 +137,66 @@ class SCALER_walking_consts:
 
     LEG_MASTER_MOTOR_ID = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     LEG_SLAVE_MOTOR_ID = [101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112]
+
     BODY_MOTOR_ID = [0]
     LIN_MOTOR_ID = [0]
     ALL_MOTOR_ID = LEG_MASTER_MOTOR_ID + LEG_SLAVE_MOTOR_ID + BODY_MOTOR_ID
     ALL_MOTOR_ID.sort()
 
-    # Dimension of the Footstep (DoF)
+
+    # Dimension of the Footstep (DoF) times 2 (since we have 2 fingertips)
     DIM_FOOTSTEP = 3  # previously dim_footstep
 
-    DIM_FINGER_TIPS = 3 # one finger
+    # Dimension of the Finger Tips (Positon: XYZ + Orientaion Quaternion: wxyz)
+    DIM_FINGER_TIPS = 3
 
     # Number of Fingers:
     DIM_NUM_FINGER = int(DIM_FOOTSTEP / DIM_FINGER_TIPS)
 
-    NUM_LEG_MOTOR = 3  # Number of master motors per leg
+    # Number of Dynamixel Motors per Leg
+    NUM_LEG_MOTOR = 3
     NUM_BODY_MOTOR = 1
+
+    # Number of Gripper Linear Actuator Variables (Length of the Linear Actuator, Offset Angle of the Linear Actuator)
+    NUM_GRIPPER_LINEAR_ACTUATOR_VARIABLES = 2
+
+
+    # TODO: CHECK OFFSET!
+    # Linear actuator offset value
+    LINEAR_ACTUATOR_OFFSET = 75
 
     assert len(LEG_MASTER_MOTOR_ID) == (NUM_LEG_MOTOR * NUM_OF_LEGS), "Error: Inconsistent number of leg motors !"
     assert len(BODY_MOTOR_ID) == NUM_BODY_MOTOR, "Error: Inconsistent number of body motors !"
 
     # The X Offset from the Shoulder Servo to the Top Leg Servo. [units: mm]
-    TOP_LEG_SERVO_OFF_X = -10.50
+    TOP_LEG_SERVO_OFF_X = -10.57
 
     # The Z Offset from the Shoulder Servo to the Top Leg Servo. [units: mm]
-    TOP_LEG_SERVO_OFF_Z = -14.25 - 71.25 #TODO: -14 or +?
+    TOP_LEG_SERVO_OFF_Z = -71.25
 
     # The X Offset from the Shoulder Servo to the Bottom Leg Servo. [units: mm]
-    BOTTOM_LEG_SERVO_OFF_X = -10.50
+    BOTTOM_LEG_SERVO_OFF_X = -10.57
 
     # The Z Offset from the Shoulder Servo to the Bottom Leg Servo. [units: mm]
-    BOTTOM_LEG_SERVO_OFF_Z = -14.25 - 71.25
+    BOTTOM_LEG_SERVO_OFF_Z = -14.25*2 - 71.25
 
-    # Length of the Wrist Link [units: mm]
-    L_WRIST = 0
+    # Length of the Wrist Link (equivalent to the length of the Gripper offset (z-component) from the Spherical Joint)
+    # [units: mm]
+    L_WRIST = 99.5
+
+    # Length of the Gripper offset (x-component) from the Spherical Joint [units: mm]
+    L_GRIPPER_OFFSET_X = 30
+
+    # Length of the Gripper offset (y-component) from the Spherical Joint [units: mm]
+    L_GRIPPER_OFFSET_Y = 62.5
 
     # Length of the Leg Link 1 (Links from the Top/Bottom Leg Servos to the Elbow Joints). [units: mm]
     L_LEG_LINK_1 = 113.00
 
-    # Length of the Leg Link 2 (Links from the Elbow Joints to the Hinge Joint). [units: mm]
+    # Length of the Leg Link 2 (Links from the Elbow Joints to the Wrist Servo). [units: mm]
     L_LEG_LINK_2 = 142.035
+
+    L_LEG_LINK_2_NEW = 136.35
 
     # Center Point Between the Top Leg Servo and the Bottom Leg Servo. (These X and Z represent the Position (X,Z) of
     # the Parallel Leg Origin with respect to Shoulder's Reference Frame) [units: mm]
@@ -196,9 +217,9 @@ class SCALER_walking_consts:
 
     L_BB = LEG_ORIGIN_X
 
-    L_LEG_LINK_A23_A24 = 34.75
+    L_LEG_LINK_A23_A24 = 36.75
 
-    L_LEG_LINK_A22_WRIST = 192.25  # TODO: Ask Yusuke for exact number from CAD
+    L_LEG_LINK_A22_WRIST = 215.05
 
     LEG_THETA_1_OFF_ANGLE = np.arcsin(L_LEG_LINK_A23_A24 / L_LEG_LINK_2)
 
@@ -210,40 +231,56 @@ class SCALER_walking_consts:
 
     LEG_GAMMA_OFF_ANGLE = LEG_THETA_1_OFF_ANGLE + LEG_THETA_2_OFF_ANGLE
 
+    T_wrist_gripper_0and2 = np.array([[ -1,0, 0,-L_GRIPPER_OFFSET_X],
+                                      [ 0,-1, 0,-L_GRIPPER_OFFSET_Y],
+                                      [ 0,0, 1,L_WRIST],
+                                      [ 0,0, 0,1]])
+
+    T_wrist_gripper_1and3 = np.array([[ 1,0, 0,L_GRIPPER_OFFSET_X],
+                                      [ 0,1, 0,-L_GRIPPER_OFFSET_Y],
+                                      [ 0,0, 1,L_WRIST],
+                                      [ 0,0, 0,1]])
+
+    T_wrist_gripper_0and2_inv = np.linalg.inv(T_wrist_gripper_0and2)
+    T_wrist_gripper_1and3_inv = np.linalg.inv(T_wrist_gripper_1and3)
+
+    # TODO: Update the hardware offsets to account for the additional wrist motors (6-DoF)
     HARDWAREOFFSET = {
         'installation_trans': np.array(
-            [[ 1,  # Shoulder Pair (Leg 1)
-              -1,  # Top Leg Serve Pair
-               1],  # Bottom Leg Servo Pair
+            [[1,    # Shoulder Pair (Leg 1)
+              -1,   # Top Leg Serve Pair
+              1],   # Third Wrist Servo
 
-             [ 1,
-               1,
-              -1],
+             [1,    # Shoulder Pair (Leg 2)
+              1,    # Top Leg Serve Pair
+              -1],   # Third Wrist Servo
 
-             [ 1,
-              -1,
-               1],
+             [1,    # Shoulder Pair (Leg 3)
+              -1,   # Top Leg Serve Pair
+              1],   # Third Wrist Servo
 
-             [ 1,
-               1,
-              -1]]),
+             [1,    # Shoulder Pair (Leg 4)
+              1,    # Top Leg Serve Pair
+              -1   ]]), # Third Wrist Servo
 
         'installation_0': np.array(
-            [[-90.0,  # Identical for a pair of motors
-               90.0,
-              -90.0],
-
-             [ 90.0,
-               90.0,
-              -90.0],
-
-             [90.0,
+            [[0.0,  # Identical for a pair of motors
               90.0,
-             -90.0],
+              -90.0],
 
-             [-90.0,
-               90.0,
+             [0.0,
+              90.0,
+              -90.0],
+
+             [0.0,
+              90.0,
+              -90.0],
+
+             [0.0,
+              90.0,
               -90.0]]) / 180.0 * np.pi}
+
+
 
     # This class is just used to keep the constants
     Ripple = 0
