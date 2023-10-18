@@ -1,15 +1,43 @@
 from scaler_kin.v3.SCALER_v2_Leg_6DOF_gripper import Leg
 import numpy as np
 from scaler_kin import util
+from warnings import warn
 
 
 
 
-class scalar_k(object):
+class scalar_k:
+    def __new__(cls, *args, **kwargs):
+        warn("Your import has name typo. use scaler_k instead of scalar_k", DeprecationWarning, stacklevel=2)
+        return super().__new__(cls, *args, **kwargs)
+
+    def __init__(self):
+        self.scaler_k = scaler_k()
+
+    def scalar_forward_kinematics(self, *args, **kwargs):
+        return self.scaler_k.scaler_forward_kinematics(*args, **kwargs)
+
+    def scalar_inverse_kinematics(self, *args, **kwargs):
+        return self.scaler_k.scaler_inverse_kinematics(*args, **kwargs)
+
+    def scalar_forward_kinematics_3DoF(self, *args, **kwargs):
+        return self.scaler_k.scaler_forward_kinematics_3DoF(*args, **kwargs)
+
+    def scalar_inverse_kinematics_3DoF(self, *args, **kwargs):
+        return self.scaler_k.scaler_inverse_kinematics_3DoF(*args, **kwargs)
+
+    def scalar_forward_kinematics_4DoF(self, *args, **kwargs):
+        return self.scaler_k.scaler_forward_kinematics_4DoF(*args, **kwargs)
+
+    def scalar_inverse_kinematics_4DoF(self, *args, **kwargs):
+        return self.scaler_k.scaler_inverse_kinematics_4DoF(*args, **kwargs)
+
+
+class scaler_k:
     def __init__(self):
         self.k_model = Leg()
 
-    def scalar_forward_kinematics(self, which_leg, joint_angles, with_body=False, with_gripper=False, L_actuator=None, theta_actuator=None, body_angle = 0.0):
+    def scaler_forward_kinematics(self, which_leg, joint_angles, with_body=False, with_gripper=False, L_actuator=None, theta_actuator=None, body_angle = 0.0):
         #inputs:
         #which_leg -> leg index 0-3
         #joint angles -> [shoulder angle, q11, q21, wrist1, wrist2, wrist3]
@@ -59,7 +87,7 @@ class scalar_k(object):
         return res
 
 
-    def scalar_inverse_kinematics(self, which_leg, target_T, is_first_ik=True, prev_angles=None, with_body=False, with_gripper=False, body_angle = 0.0):
+    def scaler_inverse_kinematics(self, which_leg, target_T, is_first_ik=True, prev_angles=None, with_body=False, with_gripper=False, body_angle = 0.0):
         #inputs:
         #which_leg -> leg index 0-3
         #target_T -> if with_gripper is False, matrix T of wrist3 in shoulder frame else a list of two T matrices of toe1 and toe2
@@ -114,7 +142,7 @@ class scalar_k(object):
             return self.k_model.leg_gripper_ik(np.array(T_toe1), np.array(T_toe2), body_angle, which_leg, is_first_ik, new_prev_angles)
 
 
-    def scalar_forward_kinematics_3DoF(self, which_leg, joint_angles, with_body=False, body_angle = 0.0, output_xyz = False):
+    def scaler_forward_kinematics_3DoF(self, which_leg, joint_angles, with_body=False, body_angle = 0.0, output_xyz = False):
         #inputs:
         #which_leg -> leg index 0-3
         #joint angles -> [shoulder angle, q11, q21]
@@ -142,7 +170,7 @@ class scalar_k(object):
             return res[0:3,3].reshape(-1)
 
 
-    def scalar_inverse_kinematics_3DoF(self, which_leg, target_pose, is_first_ik=True, prev_angles=None, with_body=False, body_angle = 0.0, input_xyz=False):
+    def scaler_inverse_kinematics_3DoF(self, which_leg, target_pose, is_first_ik=True, prev_angles=None, with_body=False, body_angle = 0.0, input_xyz=False):
         #inputs:
         #which_leg -> leg index 0-3
         #target_xyz -> target xyz position of toe in body/shoulder frame if input_xyz is true else the T matrix
@@ -177,10 +205,10 @@ class scalar_k(object):
 
         return sol
 
-    def scalar_forward_kinematics_4DoF(self, which_leg, joint_angles, with_body=False, body_angle=0.0,
+    def scaler_forward_kinematics_4DoF(self, which_leg, joint_angles, with_body=False, body_angle=0.0,
                                        output_xyzq=False):
         # First get 3DoF transformation matrix
-        T_3DoF = self.scalar_forward_kinematics_3DoF(which_leg, joint_angles[:3], with_body, body_angle)
+        T_3DoF = self.scaler_forward_kinematics_3DoF(which_leg, joint_angles[:3], with_body, body_angle)
 
         # Create the 4th joint rotation matrix around x-axis
         theta = joint_angles[3]  # 4th joint angle
@@ -212,12 +240,12 @@ class scalar_k(object):
 
 
         # Calculate 3DoF inverse kinematics
-        ik_3DoF = self.scalar_inverse_kinematics_3DoF(which_leg, target_xyz, is_first_ik,
+        ik_3DoF = self.scaler_inverse_kinematics_3DoF(which_leg, target_xyz, is_first_ik,
                                                       prev_angles[:3] if prev_angles is not None else None,
                                                          with_body, body_angle, input_xyz=True)
 
         # Calculate the current y-axis rotation from 3DoF IK solutions
-        T_3DoF = self.scalar_forward_kinematics_3DoF(which_leg, ik_3DoF, with_body, body_angle)
+        T_3DoF = self.scaler_forward_kinematics_3DoF(which_leg, ik_3DoF, with_body, body_angle)
         current_x_rotation = util.rotation_2_euler(T_3DoF[0:3,0:3])[0]
 
         # Calculate the additional rotation needed at the 4th joint
