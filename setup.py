@@ -14,9 +14,9 @@ with open('requirements.txt') as f:
 
 setup(
     name='scaler_kin',
-    version='0.3.5',
-    description='Scaler kinematics for 3DoF and 6DoF',
-    author='Feng Xu, Yusuke Tanaka',
+    version='0.4.0',
+    description='Scaler kinematics for 3DoF, 4DoF and 6DoF',
+    author='Yusuke Tanaka, Feng Xu,',
     license='LGPLv3',
     packages=find_packages(include=['scaler_kin', 'scaler_kin.*']),
     install_requires=requirements,
