@@ -6,7 +6,7 @@ from std_msgs.msg import Header
 import geometry_msgs.msg
 
 from scaler_kin.v3.SCALER_v2_Leg_6DOF_gripper import Leg
-from scaler_kin.v3.SCALAR_kinematics import scalar_k
+from scaler_kin.v3.SCALAR_kinematics import scaler_k
 
 
 def publish_to_tf(T,parent_name, child_name):
@@ -48,7 +48,7 @@ if __name__ == '__main__':
     
     L_actuator = 105
     theta_actuator = 0
-    my_scalar_k = scalar_k()
+    my_scalar_k = scaler_k()
     while 1:
         for i in range(4):
             br.sendTransform(publish_to_tf(T_0,"base_link", "Bpysilvia"))
