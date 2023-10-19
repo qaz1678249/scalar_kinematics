@@ -218,12 +218,18 @@ class scaler_k:
             [0,np.sin(theta), np.cos(theta), 0],
             [0, 0, 0, 1]
         ])
+        T_4th_joint = np.array([
+            [ np.cos(theta),0,  np.sin(theta), 0],
+            [0, 1, 0, 0],
+            [-np.sin(theta), 0, np.cos(theta), 0],
+            [0, 0, 0, 1]
+        ])
 
         # Calculate final transformation matrix
         T_final = np.dot(T_3DoF, T_4th_joint)
 
         if output_xyzq:
-            return np.append(T_final[:3, 3], util.rotation_2_euler(T_final[:3, :3])[0] )# only return the rotation around x
+            return np.append(T_final[:3, 3], util.rotation_2_euler(T_final[:3, :3])[1] )# only return the rotation around x
         else:
             return T_final
 
@@ -235,7 +241,7 @@ class scaler_k:
         else:
             # Extract desired y-axis rotation from transformation matrix
             target_xyz = target_pose[:3, 3]
-            desired_x_rotation = util.rotation_2_euler(target_pose[0:3,0:3])[0]
+            desired_x_rotation = util.rotation_2_euler(target_pose[0:3,0:3])[1]
 
 
 
@@ -246,8 +252,8 @@ class scaler_k:
 
         # Calculate the current y-axis rotation from 3DoF IK solutions
         T_3DoF = self.scaler_forward_kinematics_3DoF(which_leg, ik_3DoF, with_body, body_angle)
-        current_x_rotation = util.rotation_2_euler(T_3DoF[0:3,0:3])[0]
-
+        current_x_rotation = util.rotation_2_euler(T_3DoF[0:3,0:3])[1]
+        # print(f"x{util.rotation_2_euler(T_3DoF[0:3,0:3])[0]},y: {util.rotation_2_euler(T_3DoF[0:3,0:3])[1]}, z: {util.rotation_2_euler(T_3DoF[0:3,0:3])[2]}")
         # Calculate the additional rotation needed at the 4th joint
         theta_4th_joint = desired_x_rotation - current_x_rotation
 

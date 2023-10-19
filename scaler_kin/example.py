@@ -4,8 +4,25 @@ from time import perf_counter
 
 my_scaler_k = scaler_k()
 
-joint_angles = [0.1,0.1,np.pi/2-0.1,0.1,0.1,-0.1]
 which_leg = 1
+
+joint_angles = [0.1,0.1,np.pi/2-0.1, 0.5]
+pos = [140, 140, -150, 0.7]
+
+ik_res = my_scaler_k.scaler_inverse_kinematics_4DoF(which_leg, pos, with_body=True, input_xyzq=True)
+
+fk_res = my_scaler_k.scaler_forward_kinematics_4DoF(which_leg, ik_res, with_body=True, output_xyzq=True)
+print("fk")
+print(fk_res)
+print(ik_res)
+
+
+
+
+
+
+joint_angles = [0.1,0.1,np.pi/2-0.1,0.1,0.1,-0.1]
+
 fk_res = my_scaler_k.scaler_forward_kinematics(which_leg, joint_angles, with_body=True)
 
 print(fk_res)
@@ -49,16 +66,6 @@ ik_res = my_scaler_k.scaler_inverse_kinematics_3DoF(which_leg, fk_res, with_body
 print(ik_res)
 
 
-
-joint_angles = [0.1,0.1,np.pi/2-0.1, 0.5]
-
-fk_res = my_scaler_k.scaler_forward_kinematics_4DoF(which_leg, joint_angles, with_body=True, output_xyzq=True)
-print("fk")
-print(fk_res)
-
-ik_res = my_scaler_k.scaler_inverse_kinematics_4DoF(which_leg, fk_res, with_body=True, input_xyzq=True)
-
-print(ik_res)
 
 
 """
