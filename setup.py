@@ -14,11 +14,11 @@ with open('requirements.txt') as f:
 
 setup(
     name='scaler_kin',
-    version='0.4.0',
-    description='Scaler kinematics for 3DoF, 4DoF and 6DoF',
+    version='0.4.1',
+    description='Scaler kinematics for 3DoF, 4DoF and 6DoF and camera arm kinematics',
     author='Yusuke Tanaka, Feng Xu,',
     license='LGPLv3',
-    packages=find_packages(include=['scaler_kin', 'scaler_kin.*']),
+    packages=find_packages(include=['scaler_kin', 'scaler_kin.*', 'camera_arm_kin', 'camera_arm_kin.*']),
     install_requires=requirements,
     classifiers=[
         'Development Status :: 4 - Beta',

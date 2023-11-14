@@ -40,7 +40,14 @@ from scaler_kin import scaler_k  # imports the latest scaler kinematics
 s = scaler_k()
 s.scaler_forward_kinematics(...)
 ```
-
+## Change since Ver. 0.4.1
+### Camera arm
+Camera arm kinematics is added
+```python
+from camera_arm_kin import Cam_arm  # imports the latest camera arm kinematics
+c = Cam_arm()
+c.cam_arm_fk(...)
+```
 
 ---
 ***
