@@ -8,6 +8,7 @@ class cam_arm_consts:
     joint3_wrist1_x_offset = 201.46
     wrist1_cam_x_offset = 47.05
     motor_ID_list = [201,202,203,204]
+    safe_joint3_range = 1.98
     T_body_joint1 = np.array([[ 1,0, 0,0],
                               [ 0,1, 0,body_joint1_y_offset],
                               [ 0,0, 1,body_joint1_z_offset],
