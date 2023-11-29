@@ -1,5 +1,5 @@
 import numpy as np
-from cam_arm_hardware_constants import cam_arm_consts
+from .cam_arm_hardware_constants import cam_arm_consts
 
 body_joint1_y_offset = cam_arm_consts.body_joint1_y_offset
 body_joint1_z_offset = cam_arm_consts.body_joint1_z_offset
