@@ -10,6 +10,7 @@ T_body_joint1 = cam_arm_consts.T_body_joint1
 T_wrist1_cam = cam_arm_consts.T_wrist1_cam
 T_joint1_body = np.linalg.inv(T_body_joint1)
 wrist1_cam_x_offset = cam_arm_consts.wrist1_cam_x_offset
+safe_joint3_range = cam_arm_consts.safe_joint3_range
 
 def Rotz(joint):
     return np.array([[ np.cos(joint), -np.sin(joint), 0,0],
@@ -112,6 +113,13 @@ class Cam_arm:
             joint2 = np.arctan2(d*e-a*g, c*g-d*f)
 
         wrist1 = cam_angle - joint2 - joint3
+        
+        if joint3>safe_joint3_range or joint3<-safe_joint3_range:
+            print("unreachable position, joint3 is blocked!!!!!")
+            if joint3>safe_joint3_range:
+                joint3 = safe_joint3_range
+            else:
+                joint3 = -safe_joint3_range
 
         return [joint1, joint2, joint3, wrist1]
         
