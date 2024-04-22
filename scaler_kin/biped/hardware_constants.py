@@ -1,8 +1,8 @@
-from scaler_kin.v2.hardware_constants import SCALER_climbing_consts_6DoF_gripper, SCALER_walking_consts
-from scaler_kin.v2.hardware_constants import SCALER_climbing_consts_6DoF as climbing
+from scaler_kin.v2.hardware_constants import SCALER_climbing_consts_6DoF, SCALER_walking_consts
+from scaler_kin.v2.hardware_constants import SCALER_climbing_consts_6DoF_gripper as climbing
 
 import numpy as np
-class SCALER_climbing_consts_6DoF(climbing):
+class SCALER_climbing_consts_6DoF_gripper(climbing):
     # The X Offset from the Shoulder Servo to the Top Leg Servo. [units: mm]
     TOP_LEG_SERVO_OFF_X = np.array([-10.5, -10.25, -10.25, -10.5])
 
