@@ -173,6 +173,11 @@ class Leg(old_SCALER_v2_Leg_6DOF_gripper.Leg):
             or T matrix(depands on use_quaternion)
 
         """
+        l_leg_link_1 = L_LEG_LINK_1[which_leg] if isinstance(L_LEG_LINK_1, np.ndarray) else L_LEG_LINK_1
+        bottom_leg_servo_off_z = BOTTOM_LEG_SERVO_OFF_Z[which_leg] if isinstance(BOTTOM_LEG_SERVO_OFF_Z, np.ndarray) else BOTTOM_LEG_SERVO_OFF_Z
+        top_leg_servo_off_z = TOP_LEG_SERVO_OFF_Z[which_leg] if isinstance(TOP_LEG_SERVO_OFF_Z, np.ndarray) else TOP_LEG_SERVO_OFF_Z
+        leg_origin_x = LEG_ORIGIN_X[which_leg] if isinstance(LEG_ORIGIN_X, np.ndarray) else LEG_ORIGIN_X
+
         # Unpack the theta angles
         shoulder_angle = theta_angles[0]
         q11 = theta_angles[1]
@@ -209,9 +214,9 @@ class Leg(old_SCALER_v2_Leg_6DOF_gripper.Leg):
                                [                     0,                       0, 1, 0],
                                [0,0,0,1]])
 
-        T_shi_A_t = np.array([[1, 0, 0, LEG_ORIGIN_X],
+        T_shi_A_t = np.array([[1, 0, 0, leg_origin_x],
                               [0, 1, 0, 0],
-                              [0, 0, 1, TOP_LEG_SERVO_OFF_Z],
+                              [0, 0, 1, top_leg_servo_off_z],
                               [0,0,0,1]])
 
         T_shi_A = np.dot(T_shi_A_rot, T_shi_A_t)
@@ -243,7 +248,7 @@ class Leg(old_SCALER_v2_Leg_6DOF_gripper.Leg):
             return np.dot(T_0_A, T_A_rot)
 
         T_0_F = np.array(T_0_A)
-        T_0_F[2,3] = T_0_F[2,3] - (TOP_LEG_SERVO_OFF_Z - BOTTOM_LEG_SERVO_OFF_Z)
+        T_0_F[2,3] = T_0_F[2,3] - (top_leg_servo_off_z - bottom_leg_servo_off_z)
 
         if which_link==3:
             T_F_rot = np.array([[np.cos(q21),  -np.sin(q21),  0, 0],
@@ -256,7 +261,7 @@ class Leg(old_SCALER_v2_Leg_6DOF_gripper.Leg):
         #leg_origin_vertex = T_0_A[0:3,3]
 
 
-        fk_variable_0, fk_variable_1, fk_variable_2, fk_variable_3, L_EB, GEC_ANGLE = Leg.find_fk_variables(q11, q21)
+        fk_variable_0, fk_variable_1, fk_variable_2, fk_variable_3, L_EB, GEC_ANGLE = Leg.find_fk_variables(q11, q21, which_leg)
 
         if which_link==4 or which_link==6:
             COS_BCE = (- L_EB**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_2**2) / (2*L_LEG_LINK_2*L_LEG_LINK_2_NEW)
@@ -266,8 +271,8 @@ class Leg(old_SCALER_v2_Leg_6DOF_gripper.Leg):
             HCE_ANGLE = np.pi/2 - GEC_ANGLE
             BCH_ANGLE = BCE_ANGLE - HCE_ANGLE
 
-            T_A_B = np.array([[np.cos(BCH_ANGLE), -np.sin(BCH_ANGLE),0,L_LEG_LINK_1 * np.cos(q11)],
-                              [np.sin(BCH_ANGLE),  np.cos(BCH_ANGLE),0,L_LEG_LINK_1 * np.sin(q11)],
+            T_A_B = np.array([[np.cos(BCH_ANGLE), -np.sin(BCH_ANGLE),0,l_leg_link_1 * np.cos(q11)],
+                              [np.sin(BCH_ANGLE),  np.cos(BCH_ANGLE),0,l_leg_link_1 * np.sin(q11)],
                               [0,0,1,0],
                               [0,0,0,1]])
             T_0_B = np.dot(T_0_A, T_A_B)
@@ -286,8 +291,8 @@ class Leg(old_SCALER_v2_Leg_6DOF_gripper.Leg):
 
         GET_ANGLE = GEC_ANGLE + LEG_THETA_1_OFF_ANGLE
         GET_ANGLE_OFF = np.pi/2 - GET_ANGLE
-        T_A_E = np.array([[np.cos(-GET_ANGLE_OFF), -np.sin(-GET_ANGLE_OFF),0,L_LEG_LINK_1 * np.cos(q21)+L_BLSP],
-                          [np.sin(-GET_ANGLE_OFF),  np.cos(-GET_ANGLE_OFF),0,L_LEG_LINK_1 * np.sin(q21)],
+        T_A_E = np.array([[np.cos(-GET_ANGLE_OFF), -np.sin(-GET_ANGLE_OFF),0,l_leg_link_1 * np.cos(q21)+L_BLSP],
+                          [np.sin(-GET_ANGLE_OFF),  np.cos(-GET_ANGLE_OFF),0,l_leg_link_1 * np.sin(q21)],
                           [0,0,1,0],
                           [0,0,0,1]])
         T_0_E = np.dot(T_0_A, T_A_E)

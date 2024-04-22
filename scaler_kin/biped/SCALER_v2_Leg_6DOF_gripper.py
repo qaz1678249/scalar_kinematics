@@ -160,9 +160,9 @@ class Leg:
 
             use_quaternion: (by default)If it is True, the final result of frame gripper_center would be in the format of [posx,posy,posz, qw, qx, qy, qz], but all the other returned links would be T matrix
                             If it is False, all the outputs would be T matrix
+                            
 
-
-
+                
 
 
         Returns:
@@ -180,14 +180,6 @@ class Leg:
             or T matrix(depands on use_quaternion)
 
         """
-        l_leg_link_1 = L_LEG_LINK_1[which_leg] if isinstance(L_LEG_LINK_1, np.ndarray) else L_LEG_LINK_1
-        bottom_leg_servo_off_z = BOTTOM_LEG_SERVO_OFF_Z[which_leg] if isinstance(BOTTOM_LEG_SERVO_OFF_Z,
-                                                                                 np.ndarray) else BOTTOM_LEG_SERVO_OFF_Z
-        top_leg_servo_off_z = TOP_LEG_SERVO_OFF_Z[which_leg] if isinstance(TOP_LEG_SERVO_OFF_Z,
-                                                                           np.ndarray) else TOP_LEG_SERVO_OFF_Z
-        leg_origin_x = LEG_ORIGIN_X[which_leg] if isinstance(LEG_ORIGIN_X, np.ndarray) else LEG_ORIGIN_X
-
-        leg_origin_z = LEG_ORIGIN_Z[which_leg] if isinstance(LEG_ORIGIN_Z, np.ndarray) else LEG_ORIGIN_Z
         # Unpack the theta angles
         # Unpack the theta Angles
         shoulder_angle = theta_angles[0]
@@ -204,7 +196,7 @@ class Leg:
                                                                   use_find_specific_shoulder=True,
                                                                   which_leg=which_leg)
 
-
+        
         if which_leg==0 or which_leg==3:
             T_0_shi = np.array([[np.cos(np.pi/2), -np.sin(np.pi/2), 0, 0],
                                 [np.sin(np.pi/2),  np.cos(np.pi/2), 0, 0],
@@ -215,7 +207,7 @@ class Leg:
                                 [np.sin(-np.pi/2),  np.cos(-np.pi/2), 0, 0],
                                 [            0,              0, 1, 0],
                                 [0,0,0,1]])
-        T_0_shi[0:3,3] = np.array(shoulder_vertex)
+        T_0_shi[0:3,3] = np.array(shoulder_vertex)       
         if which_link==1:
             return T_0_shi
 
@@ -225,9 +217,9 @@ class Leg:
                                [                     0,                       0, 1, 0],
                                [0,0,0,1]])
 
-        T_shi_A_t = np.array([[1, 0, 0, leg_origin_x],
+        T_shi_A_t = np.array([[1, 0, 0, LEG_ORIGIN_X],
                               [0, 1, 0, 0],
-                              [0, 0, 1, top_leg_servo_off_z],
+                              [0, 0, 1, TOP_LEG_SERVO_OFF_Z],
                               [0,0,0,1]])
 
         T_shi_A = np.dot(T_shi_A_rot, T_shi_A_t)
@@ -259,7 +251,7 @@ class Leg:
             return np.dot(T_0_A, T_A_rot)
 
         T_0_F = np.array(T_0_A)
-        T_0_F[2,3] = T_0_F[2,3] - (top_leg_servo_off_z - bottom_leg_servo_off_z)
+        T_0_F[2,3] = T_0_F[2,3] - (TOP_LEG_SERVO_OFF_Z - BOTTOM_LEG_SERVO_OFF_Z)
 
         if which_link==3:
             T_F_rot = np.array([[np.cos(q21),  -np.sin(q21),  0, 0],
@@ -268,22 +260,22 @@ class Leg:
                                 [0,0,0,1]])
             return np.dot(T_0_F, T_F_rot)
 
-
+        
         #leg_origin_vertex = T_0_A[0:3,3]
 
 
-        fk_variable_0, fk_variable_1, fk_variable_2, fk_variable_3, L_EB, GEC_ANGLE = Leg.find_fk_variables(q11, q21, which_leg)
+        fk_variable_0, fk_variable_1, fk_variable_2, fk_variable_3, L_EB, GEC_ANGLE = Leg.find_fk_variables(q11, q21)
 
         if which_link==4 or which_link==6:
             COS_BCE = (- L_EB**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_2**2) / (2*L_LEG_LINK_2*L_LEG_LINK_2_NEW)
             SIN_BCE = np.sqrt(1 - COS_BCE**2)
             BCE_ANGLE = np.arctan2(SIN_BCE, COS_BCE)
-
+            
             HCE_ANGLE = np.pi/2 - GEC_ANGLE
             BCH_ANGLE = BCE_ANGLE - HCE_ANGLE
 
-            T_A_B = np.array([[np.cos(BCH_ANGLE), -np.sin(BCH_ANGLE),0,l_leg_link_1 * np.cos(q11)],
-                              [np.sin(BCH_ANGLE),  np.cos(BCH_ANGLE),0,l_leg_link_1 * np.sin(q11)],
+            T_A_B = np.array([[np.cos(BCH_ANGLE), -np.sin(BCH_ANGLE),0,L_LEG_LINK_1 * np.cos(q11)],
+                              [np.sin(BCH_ANGLE),  np.cos(BCH_ANGLE),0,L_LEG_LINK_1 * np.sin(q11)],
                               [0,0,1,0],
                               [0,0,0,1]])
             T_0_B = np.dot(T_0_A, T_A_B)
@@ -302,8 +294,8 @@ class Leg:
 
         GET_ANGLE = GEC_ANGLE + LEG_THETA_1_OFF_ANGLE
         GET_ANGLE_OFF = np.pi/2 - GET_ANGLE
-        T_A_E = np.array([[np.cos(-GET_ANGLE_OFF), -np.sin(-GET_ANGLE_OFF),0,l_leg_link_1 * np.cos(q21)+L_BLSP],
-                          [np.sin(-GET_ANGLE_OFF),  np.cos(-GET_ANGLE_OFF),0,l_leg_link_1 * np.sin(q21)],
+        T_A_E = np.array([[np.cos(-GET_ANGLE_OFF), -np.sin(-GET_ANGLE_OFF),0,L_LEG_LINK_1 * np.cos(q21)+L_BLSP],
+                          [np.sin(-GET_ANGLE_OFF),  np.cos(-GET_ANGLE_OFF),0,L_LEG_LINK_1 * np.sin(q21)],
                           [0,0,1,0],
                           [0,0,0,1]])
         T_0_E = np.dot(T_0_A, T_A_E)
@@ -885,16 +877,6 @@ class Leg:
                 position_state[1]: Y Position of the footstep with respect to the body frame. [units: mm]
                 position_state[2]: Z Position of the footstep with respect to the body frame. [units: mm]
         """
-
-        l_leg_link_1 = L_LEG_LINK_1[which_leg] if isinstance(L_LEG_LINK_1, np.ndarray) else L_LEG_LINK_1
-        bottom_leg_servo_off_z = BOTTOM_LEG_SERVO_OFF_Z[which_leg] if isinstance(BOTTOM_LEG_SERVO_OFF_Z,
-                                                                                 np.ndarray) else BOTTOM_LEG_SERVO_OFF_Z
-        top_leg_servo_off_z = TOP_LEG_SERVO_OFF_Z[which_leg] if isinstance(TOP_LEG_SERVO_OFF_Z,
-                                                                           np.ndarray) else TOP_LEG_SERVO_OFF_Z
-        leg_origin_x = LEG_ORIGIN_X[which_leg] if isinstance(LEG_ORIGIN_X, np.ndarray) else LEG_ORIGIN_X
-
-        leg_origin_z = LEG_ORIGIN_Z[which_leg] if isinstance(LEG_ORIGIN_Z, np.ndarray) else LEG_ORIGIN_Z
-
         # Unpack the theta angles
         shoulder_angle = theta_angles[0]
         q11 = theta_angles[1]
@@ -909,15 +891,15 @@ class Leg:
                                                                   use_find_specific_shoulder=True,
                                                                   which_leg=which_leg)
 
-        leg_origin_vertex = shoulder_vertex + np.array([leg_origin_x * np.cos(shoulder_angle),
-                                                        leg_origin_x * np.sin(shoulder_angle),
-                                                        top_leg_servo_off_z])
+        leg_origin_vertex = shoulder_vertex + np.array([LEG_ORIGIN_X * np.cos(shoulder_angle),
+                                                        LEG_ORIGIN_X * np.sin(shoulder_angle),
+                                                        TOP_LEG_SERVO_OFF_Z])
 
         fk_variable_0, fk_variable_1, fk_variable_2, fk_variable_3, fk_variable_4, fk_variable_5, fk_variable_6 = \
             Leg.find_fk_variables(q11, q21, qw1, qw2, qw3, which_leg)
 
-        phi_v2 = np.arctan2(fk_variable_2 - l_leg_link_1 * np.sin(q21),
-                            fk_variable_3 - l_leg_link_1 * np.cos(q21) - L_BLSP)
+        phi_v2 = np.arctan2(fk_variable_2 - L_LEG_LINK_1 * np.sin(q21),
+                            fk_variable_3 - L_LEG_LINK_1 * np.cos(q21) - L_BLSP)
 
         position_state[0] = leg_origin_vertex[0] + np.cos(shoulder_angle) * fk_variable_2 + \
             np.cos(shoulder_angle) * np.sin(phi_v2) * fk_variable_4 + \
@@ -974,15 +956,6 @@ class Leg:
                 quaternion_state[2]: Y Orientation of the gripper (quaternion) with respect to the body frame.
                 quaternion_state[3]: Z Orientation of the gripper (quaternion) with respect to the body frame.
         """
-        l_leg_link_1 = L_LEG_LINK_1[which_leg] if isinstance(L_LEG_LINK_1, np.ndarray) else L_LEG_LINK_1
-        bottom_leg_servo_off_z = BOTTOM_LEG_SERVO_OFF_Z[which_leg] if isinstance(BOTTOM_LEG_SERVO_OFF_Z,
-                                                                                 np.ndarray) else BOTTOM_LEG_SERVO_OFF_Z
-        top_leg_servo_off_z = TOP_LEG_SERVO_OFF_Z[which_leg] if isinstance(TOP_LEG_SERVO_OFF_Z,
-                                                                           np.ndarray) else TOP_LEG_SERVO_OFF_Z
-        leg_origin_x = LEG_ORIGIN_X[which_leg] if isinstance(LEG_ORIGIN_X, np.ndarray) else LEG_ORIGIN_X
-
-        leg_origin_z = LEG_ORIGIN_Z[which_leg] if isinstance(LEG_ORIGIN_Z, np.ndarray) else LEG_ORIGIN_Z
-
         # Unpack the theta angles
         shoulder_angle = theta_angles[0]
         q11 = theta_angles[1]
@@ -994,8 +967,8 @@ class Leg:
         fk_variable_0, fk_variable_1, fk_variable_2, fk_variable_3, fk_variable_4, fk_variable_5, fk_variable_6 = \
             Leg.find_fk_variables(q11, q21, qw1, qw2, qw3, which_leg)
 
-        phi_v2 = np.arctan2(fk_variable_2 - l_leg_link_1 * np.sin(q21),
-                            fk_variable_3 - l_leg_link_1 * np.cos(q21) - L_BLSP)
+        phi_v2 = np.arctan2(fk_variable_2 - L_LEG_LINK_1 * np.sin(q21),
+                            fk_variable_3 - L_LEG_LINK_1 * np.cos(q21) - L_BLSP)
 
         r_11 = np.cos(qw1) * np.cos(qw3) * np.sin(shoulder_angle) - \
             np.cos(phi_v2) * np.cos(shoulder_angle) * np.cos(qw2) * np.sin(qw3) + \
@@ -1050,7 +1023,7 @@ class Leg:
         return quaternion_state
 
     @staticmethod
-    def find_fk_variables(q11, q21, which_leg):
+    def find_fk_variables(q11, q21):
         """ Calculates the Variables for forward kinematics
 
         Using this method removes many redundant calculations that were previously present and makes the forward
@@ -1077,35 +1050,25 @@ class Leg:
                                Leg).
 
         """
-        l_leg_link_1 = L_LEG_LINK_1[which_leg] if isinstance(L_LEG_LINK_1, np.ndarray) else L_LEG_LINK_1
-        bottom_leg_servo_off_z = BOTTOM_LEG_SERVO_OFF_Z[which_leg] if isinstance(BOTTOM_LEG_SERVO_OFF_Z,
-                                                                                 np.ndarray) else BOTTOM_LEG_SERVO_OFF_Z
-        top_leg_servo_off_z = TOP_LEG_SERVO_OFF_Z[which_leg] if isinstance(TOP_LEG_SERVO_OFF_Z,
-                                                                           np.ndarray) else TOP_LEG_SERVO_OFF_Z
-        leg_origin_x = LEG_ORIGIN_X[which_leg] if isinstance(LEG_ORIGIN_X, np.ndarray) else LEG_ORIGIN_X
-
-        leg_origin_z = LEG_ORIGIN_Z[which_leg] if isinstance(LEG_ORIGIN_Z, np.ndarray) else LEG_ORIGIN_Z
-
-
         # Variable zeta_n
         fk_variable_0 = L_LEG_LINK_A22_WRIST / (2 * L_LEG_LINK_2)
 
         # Variable K
         fk_variable_1 = (L_LEG_LINK_A22_WRIST ** 2 / (
-                L_BLSP ** 2 + 2 * L_BLSP * l_leg_link_1 * (np.cos(q21) - np.cos(q11)) +
-                2 * l_leg_link_1 ** 2 * (1 - np.cos(q11 - q21))) - fk_variable_0 ** 2) ** (1 / 2)
+                L_BLSP ** 2 + 2 * L_BLSP * L_LEG_LINK_1 * (np.cos(q21) - np.cos(q11)) +
+                2 * L_LEG_LINK_1 ** 2 * (1 - np.cos(q11 - q21))) - fk_variable_0 ** 2) ** (1 / 2)
 
 
-        L_GB = l_leg_link_1 * (np.cos(q11) - np.cos(q21)) - L_BLSP
-        L_EG = l_leg_link_1 * (np.sin(q21) - np.sin(q11))
+        L_GB = L_LEG_LINK_1 * (np.cos(q11) - np.cos(q21)) - L_BLSP
+        L_EG = L_LEG_LINK_1 * (np.sin(q21) - np.sin(q11))
         L_EB = np.sqrt(L_GB**2 + L_EG**2)
 
         COS_GEB = L_EG/L_EB
-        SIN_GEB = L_GB/L_EB
+        SIN_GEB = L_GB/L_EB    
 
         COS_BEC = (L_EB**2 + L_LEG_LINK_2_NEW**2 - L_LEG_LINK_2**2) / (2*L_EB*L_LEG_LINK_2_NEW)
         SIN_BEC = np.sqrt(1 - COS_BEC**2)
-
+  
 
         COS_GET = (COS_GEB*COS_BEC - SIN_GEB*SIN_BEC)*np.cos(LEG_THETA_1_OFF_ANGLE) - (SIN_GEB*COS_BEC + COS_GEB*SIN_BEC)*np.sin(LEG_THETA_1_OFF_ANGLE)
         SIN_GET = (SIN_GEB*COS_BEC + COS_GEB*SIN_BEC)*np.cos(LEG_THETA_1_OFF_ANGLE) + (COS_GEB*COS_BEC - SIN_GEB*SIN_BEC)*np.sin(LEG_THETA_1_OFF_ANGLE)
@@ -1115,28 +1078,28 @@ class Leg:
         L_IT = L_LEG_LINK_A22_WRIST * SIN_GET
 
 
-        fk_variable_2 = l_leg_link_1 * np.sin(q21) - L_EI
-        fk_variable_3 = l_leg_link_1 * np.cos(q21) + L_BLSP + L_IT
+        fk_variable_2 = L_LEG_LINK_1 * np.sin(q21) - L_EI
+        fk_variable_3 = L_LEG_LINK_1 * np.cos(q21) + L_BLSP + L_IT
 
         GEC_ANGLE = np.arctan2(SIN_GEB, COS_GEB) + np.arctan2(SIN_BEC, COS_BEC)
 
 
         """
         # Variable y_L
-        fk_variable_2 = (l_leg_link_1 * (np.cos(q11) - np.cos(q21)) - L_BLSP) * \
+        fk_variable_2 = (L_LEG_LINK_1 * (np.cos(q11) - np.cos(q21)) - L_BLSP) * \
                         (fk_variable_1 * np.cos(LEG_THETA_1_OFF_ANGLE) +
                          fk_variable_0 * np.sin(LEG_THETA_1_OFF_ANGLE)) - \
-                        (l_leg_link_1 * (np.sin(q21) - np.sin(q11))) * \
+                        (L_LEG_LINK_1 * (np.sin(q21) - np.sin(q11))) * \
                         (fk_variable_0 * np.cos(LEG_THETA_1_OFF_ANGLE) -
-                         fk_variable_1 * np.sin(LEG_THETA_1_OFF_ANGLE)) + l_leg_link_1 * np.sin(q21)
+                         fk_variable_1 * np.sin(LEG_THETA_1_OFF_ANGLE)) + L_LEG_LINK_1 * np.sin(q21)
 
         # Variable x_L
-        fk_variable_3 = (l_leg_link_1 * (np.sin(q21) - np.sin(q11))) * \
+        fk_variable_3 = (L_LEG_LINK_1 * (np.sin(q21) - np.sin(q11))) * \
                         (fk_variable_1 * np.cos(LEG_THETA_1_OFF_ANGLE) +
                          fk_variable_0 * np.sin(LEG_THETA_1_OFF_ANGLE)) + \
-                        (l_leg_link_1 * (np.cos(q11) - np.cos(q21)) - L_BLSP) * \
+                        (L_LEG_LINK_1 * (np.cos(q11) - np.cos(q21)) - L_BLSP) * \
                         (fk_variable_0 * np.cos(LEG_THETA_1_OFF_ANGLE) -
-                         fk_variable_1 * np.sin(LEG_THETA_1_OFF_ANGLE)) + l_leg_link_1 * np.cos(q21) + L_BLSP
+                         fk_variable_1 * np.sin(LEG_THETA_1_OFF_ANGLE)) + L_LEG_LINK_1 * np.cos(q21) + L_BLSP
         """
 
         return fk_variable_0, fk_variable_1, fk_variable_2, fk_variable_3, L_EB, GEC_ANGLE
@@ -1324,16 +1287,6 @@ class Leg:
 
     @staticmethod
     def leg_ik_direct_calculation_3DoF(shoulder_2_toe_xyz, which_leg, is_first_ik = True, prev_angles=None):
-        l_leg_link_1 = L_LEG_LINK_1[which_leg] if isinstance(L_LEG_LINK_1, np.ndarray) else L_LEG_LINK_1
-        bottom_leg_servo_off_z = BOTTOM_LEG_SERVO_OFF_Z[which_leg] if isinstance(BOTTOM_LEG_SERVO_OFF_Z,
-                                                                                 np.ndarray) else BOTTOM_LEG_SERVO_OFF_Z
-        top_leg_servo_off_z = TOP_LEG_SERVO_OFF_Z[which_leg] if isinstance(TOP_LEG_SERVO_OFF_Z,
-                                                                           np.ndarray) else TOP_LEG_SERVO_OFF_Z
-        leg_origin_x = LEG_ORIGIN_X[which_leg] if isinstance(LEG_ORIGIN_X, np.ndarray) else LEG_ORIGIN_X
-
-        leg_origin_z = LEG_ORIGIN_Z[which_leg] if isinstance(LEG_ORIGIN_Z, np.ndarray) else LEG_ORIGIN_Z
-
-
         shoulder_angle = np.arctan2(shoulder_2_toe_xyz[1],shoulder_2_toe_xyz[0])
         if is_first_ik == False:
             prev_shoulder_angle = prev_angles[6*which_leg]
@@ -1350,9 +1303,9 @@ class Leg:
                                [                     0,                       0, 1, 0],
                                [0,0,0,1]])
 
-        T_shi_A_t = np.array([[1, 0, 0, leg_origin_x],
+        T_shi_A_t = np.array([[1, 0, 0, LEG_ORIGIN_X],
                               [0, 1, 0, 0],
-                              [0, 0, 1, top_leg_servo_off_z],
+                              [0, 0, 1, TOP_LEG_SERVO_OFF_Z],
                               [0,0,0,1]])
 
         T_shi_A = np.dot(T_shi_A_rot, T_shi_A_t)
@@ -1383,7 +1336,7 @@ class Leg:
             min_dist = 2147483647.0
             dcase = 0
             for i in range(1):
-                current_sol = Leg.leg_ik_2DoF(P_A[1, 0], P_A[0, 0], i, init_guess = prev_q11q21, which_leg=which_leg)
+                current_sol = Leg.leg_ik_2DoF(P_A[1, 0], P_A[0, 0], i, init_guess = prev_q11q21)
                 current_sol = np.array(wrap_to_pi(np.array([current_sol[0], current_sol[1]]))).reshape(-1)
                 dist = np.linalg.norm(current_sol-prev_q11q21)
 
@@ -1401,19 +1354,11 @@ class Leg:
         return sol
 
     @staticmethod
-    def leg_ik_2DoF(y_ee, x_ee, case=0, init_guess = None, which_leg=0):
+    def leg_ik_2DoF(y_ee, x_ee, case=0, init_guess = None):
         #case 0 : q11 -90 to 90 degrees / q21 0 to 180 degrees
         #case 1 : q11 90 to 180 degrees and -90 to -180 degrees / q21 0 to 180 degrees
         #case 2 : q11 -90 to 90 degrees / q21 0 to -180 degrees
         #case 3:  q11 90 to 180 degrees and -90 to -180 degrees / q21 0 to -180 degrees
-        l_leg_link_1 = L_LEG_LINK_1[which_leg] if isinstance(L_LEG_LINK_1, np.ndarray) else L_LEG_LINK_1
-        bottom_leg_servo_off_z = BOTTOM_LEG_SERVO_OFF_Z[which_leg] if isinstance(BOTTOM_LEG_SERVO_OFF_Z,
-                                                                                 np.ndarray) else BOTTOM_LEG_SERVO_OFF_Z
-        top_leg_servo_off_z = TOP_LEG_SERVO_OFF_Z[which_leg] if isinstance(TOP_LEG_SERVO_OFF_Z,
-                                                                           np.ndarray) else TOP_LEG_SERVO_OFF_Z
-        leg_origin_x = LEG_ORIGIN_X[which_leg] if isinstance(LEG_ORIGIN_X, np.ndarray) else LEG_ORIGIN_X
-
-        leg_origin_z = LEG_ORIGIN_Z[which_leg] if isinstance(LEG_ORIGIN_Z, np.ndarray) else LEG_ORIGIN_Z
 
         def func(x):
             if case == 0:
@@ -1437,16 +1382,16 @@ class Leg:
                 cosq11 = -np.sqrt(1-sinq11**2)
                 sinq21 = -np.sqrt(1-cosq21**2)
 
-            L_GB = l_leg_link_1 * (cosq11 - cosq21) - L_BLSP
-            L_EG = l_leg_link_1 * (sinq21 - sinq11)
+            L_GB = L_LEG_LINK_1 * (cosq11 - cosq21) - L_BLSP
+            L_EG = L_LEG_LINK_1 * (sinq21 - sinq11)
             L_EB = np.sqrt(L_GB**2 + L_EG**2)
 
             COS_GEB = L_EG/L_EB
-            SIN_GEB = L_GB/L_EB
+            SIN_GEB = L_GB/L_EB    
 
             COS_BEC = (L_EB**2 + L_LEG_LINK_2_NEW**2 - L_LEG_LINK_2**2) / (2*L_EB*L_LEG_LINK_2_NEW)
             SIN_BEC = np.sqrt(1 - COS_BEC**2)
-
+  
 
             COS_GET = (COS_GEB*COS_BEC - SIN_GEB*SIN_BEC)*np.cos(LEG_THETA_1_OFF_ANGLE) - (SIN_GEB*COS_BEC + COS_GEB*SIN_BEC)*np.sin(LEG_THETA_1_OFF_ANGLE)
             SIN_GET = (SIN_GEB*COS_BEC + COS_GEB*SIN_BEC)*np.cos(LEG_THETA_1_OFF_ANGLE) + (COS_GEB*COS_BEC - SIN_GEB*SIN_BEC)*np.sin(LEG_THETA_1_OFF_ANGLE)
@@ -1456,8 +1401,8 @@ class Leg:
             L_IT = L_LEG_LINK_A22_WRIST * SIN_GET
 
 
-            fk_variable_2 = l_leg_link_1 * sinq21 - L_EI
-            fk_variable_3 = l_leg_link_1 * cosq21 + L_BLSP + L_IT
+            fk_variable_2 = L_LEG_LINK_1 * sinq21 - L_EI
+            fk_variable_3 = L_LEG_LINK_1 * cosq21 + L_BLSP + L_IT
 
             return [fk_variable_2-y_ee, fk_variable_3-x_ee]
 
@@ -1544,14 +1489,6 @@ class Leg:
     def measurment_orientation_6DoF_gripper(toe1, toe2, body_angle, FT_ft_frame, F_finger1_frame, F_finger2_frame, whichLeg):
         # OUTPUT: toe 1 and 2 position relative to gripper center frame, FT sensor value relative to gripper center frame,
         # and toe1 and 2 forces relative to gripper center frame
-        l_leg_link_1 = L_LEG_LINK_1[whichLeg] if isinstance(L_LEG_LINK_1, np.ndarray) else L_LEG_LINK_1
-        bottom_leg_servo_off_z = BOTTOM_LEG_SERVO_OFF_Z[whichLeg] if isinstance(BOTTOM_LEG_SERVO_OFF_Z,
-                                                                                 np.ndarray) else BOTTOM_LEG_SERVO_OFF_Z
-        top_leg_servo_off_z = TOP_LEG_SERVO_OFF_Z[whichLeg] if isinstance(TOP_LEG_SERVO_OFF_Z,
-                                                                           np.ndarray) else TOP_LEG_SERVO_OFF_Z
-        leg_origin_x = LEG_ORIGIN_X[whichLeg] if isinstance(LEG_ORIGIN_X, np.ndarray) else LEG_ORIGIN_X
-
-        leg_origin_z = LEG_ORIGIN_Z[whichLeg] if isinstance(LEG_ORIGIN_Z, np.ndarray) else LEG_ORIGIN_Z
 
 
         # We calculate the linear actuator and gripper offset angle value (i.e., IK of gripper only)
@@ -1690,12 +1627,12 @@ class Leg:
                                                                                   wrist_quaternion, L_WRIST,
                                                                                   L_GRIPPER_OFFSET_X,
                                                                                   L_GRIPPER_OFFSET_Y,
-                                                                                  leg_origin_x, leg_origin_z,
+                                                                                  LEG_ORIGIN_X, LEG_ORIGIN_Z,
                                                                                   LEG_ROT_OFF_ANGLE,
                                                                                   which_leg=whichLeg)
 
         q11, q12, q13, q21, q22, phi = Scaler_utils.SCALERv2UtilMethods.leg_v2_ik_direct(px_wrist_leg, py_wrist_leg,
-                                                                                         l_leg_link_1, L_LEG_LINK_2,
+                                                                                         L_LEG_LINK_1, L_LEG_LINK_2,
                                                                                          L_LEG_LINK_A23_WRIST, L_BLSP,
                                                                                          LEG_GAMMA_OFF_ANGLE,
                                                                                          LEG_THETA_1_OFF_ANGLE)
@@ -1773,27 +1710,16 @@ class Leg:
                     phi             : Angle of Orientation Constraint of Parallel Leg Mechanism
                                       (i.e., phi = q21 + q22 = q11 + q12 + q13) [units: radians]
                 """
-        l_leg_link_1 = L_LEG_LINK_1[whichLeg] if isinstance(L_LEG_LINK_1, np.ndarray) else L_LEG_LINK_1
-
-        bottom_leg_servo_off_z = BOTTOM_LEG_SERVO_OFF_Z[whichLeg] if isinstance(BOTTOM_LEG_SERVO_OFF_Z,
-                                                                                 np.ndarray) else BOTTOM_LEG_SERVO_OFF_Z
-        top_leg_servo_off_z = TOP_LEG_SERVO_OFF_Z[whichLeg] if isinstance(TOP_LEG_SERVO_OFF_Z,
-                                                                           np.ndarray) else TOP_LEG_SERVO_OFF_Z
-        leg_origin_x = LEG_ORIGIN_X[whichLeg] if isinstance(LEG_ORIGIN_X, np.ndarray) else LEG_ORIGIN_X
-
-        leg_origin_z = LEG_ORIGIN_Z[whichLeg] if isinstance(LEG_ORIGIN_Z, np.ndarray) else LEG_ORIGIN_Z
-
-
         shoulder_angle, px_wrist_leg, py_wrist_leg, pz_wrist_leg = \
             Scaler_utils.ScalerStandardUtilMethods.find_position_wrist_2_leg_6dof(shoulder_2_toe_xyz,
                                                                                   wrist_quaternion, L_WRIST,
                                                                                   L_GRIPPER_OFFSET_X,
                                                                                   L_GRIPPER_OFFSET_Y,
-                                                                                  leg_origin_x, leg_origin_z,
+                                                                                  LEG_ORIGIN_X, LEG_ORIGIN_Z,
                                                                                   LEG_ROT_OFF_ANGLE, whichLeg)
 
         q11, q12, q13, q21, q22, phi = Scaler_utils.SCALERv2UtilMethods.leg_v2_ik_direct(px_wrist_leg, py_wrist_leg,
-                                                                                         l_leg_link_1, L_LEG_LINK_2,
+                                                                                         L_LEG_LINK_1, L_LEG_LINK_2,
                                                                                          L_LEG_LINK_A23_WRIST, L_BLSP,
                                                                                          LEG_GAMMA_OFF_ANGLE,
                                                                                          LEG_THETA_1_OFF_ANGLE)
@@ -1831,8 +1757,8 @@ class Leg:
         fk_variable_0, fk_variable_1, fk_variable_2, fk_variable_3, fk_variable_4, fk_variable_5, fk_variable_6 = \
             Leg.find_fk_variables(q11, q21, qw1, qw2, qw3, whichLeg)
 
-        phi_v2 = np.arctan2(fk_variable_2 - l_leg_link_1 * np.sin(q21),
-                            fk_variable_3 - l_leg_link_1 * np.cos(q21) - L_BLSP)
+        phi_v2 = np.arctan2(fk_variable_2 - L_LEG_LINK_1 * np.sin(q21),
+                            fk_variable_3 - L_LEG_LINK_1 * np.cos(q21) - L_BLSP)
 
         r_11 = np.cos(qw1) * np.cos(qw3) * np.sin(shoulder_angle) - \
                np.cos(phi_v2) * np.cos(shoulder_angle) * np.cos(qw2) * np.sin(qw3) + \
@@ -1991,23 +1917,23 @@ class Leg:
         #inputs
         #joint_angles -> a list of 3 joints [shoulder angle, q11, q12]
         #which_leg -> leg index
-
+        
         #output
         #The 3x3 jacobian matrix   (end_effector_position_dot = jacobian * joint_angles_dot)
-
-
+        
+        
         th3 = joint_angles[0]
         q11 = joint_angles[1]
         q12 = joint_angles[2]
-
+        
         jac = np.zeros((3,3), dtype=np.float32)
         R_LSE_2_SCALER = np.zeros((3,3), dtype=np.float32);
         R_LSE_2_SCALER[0,1] = -1
         R_LSE_2_SCALER[1,0] =  1
         R_LSE_2_SCALER[2,2] =  1
-
+        
         if which_leg==0:
-            jac[0,0]=L_LEG_LINK_A22_WRIST*np.sin(th3)*(np.cos(LEG_THETA_1_OFF_ANGLE)*(((L_BLSP - l_leg_link_1*(np.cos(q11) - np.cos(q12)))*(1 - ((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2/(4*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)))**(1/2))/((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**(1/2) - (L_LEG_LINK_1*(np.sin(q11) - np.sin(q12))*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2))/(2*L_LEG_LINK_2_NEW*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2))) + np.sin(LEG_THETA_1_OFF_ANGLE)*(((L_BLSP/2 - (L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))/2)*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2))/(L_LEG_LINK_2_NEW*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)) + (L_LEG_LINK_1*(np.sin(q11) - np.sin(q12))*(1 - ((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2/(4*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)))**(1/2))/((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**(1/2))) - LEG_ORIGIN_X*np.sin(th3) - L_LEG_LINK_1*np.sin(q12)*np.sin(th3)
+            jac[0,0]=L_LEG_LINK_A22_WRIST*np.sin(th3)*(np.cos(LEG_THETA_1_OFF_ANGLE)*(((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))*(1 - ((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2/(4*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)))**(1/2))/((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**(1/2) - (L_LEG_LINK_1*(np.sin(q11) - np.sin(q12))*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2))/(2*L_LEG_LINK_2_NEW*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2))) + np.sin(LEG_THETA_1_OFF_ANGLE)*(((L_BLSP/2 - (L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))/2)*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2))/(L_LEG_LINK_2_NEW*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)) + (L_LEG_LINK_1*(np.sin(q11) - np.sin(q12))*(1 - ((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2/(4*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)))**(1/2))/((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**(1/2))) - LEG_ORIGIN_X*np.sin(th3) - L_LEG_LINK_1*np.sin(q12)*np.sin(th3)
             jac[0,1]=-L_LEG_LINK_A22_WRIST*np.cos(th3)*(np.sin(LEG_THETA_1_OFF_ANGLE)*(((2*L_LEG_LINK_1*np.sin(q11)*(L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12))) + 2*L_LEG_LINK_1**2*np.cos(q11)*(np.sin(q11) - np.sin(q12)))*(L_BLSP/2 - (L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))/2))/(L_LEG_LINK_2_NEW*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)) + (L_LEG_LINK_1*np.cos(q11)*(1 - ((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2/(4*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)))**(1/2))/((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**(1/2) - (L_LEG_LINK_1*(np.sin(q11) - np.sin(q12))*(((2*L_LEG_LINK_1*np.sin(q11)*(L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12))) + 2*L_LEG_LINK_1**2*np.cos(q11)*(np.sin(q11) - np.sin(q12)))*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2))/(2*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)) - ((2*L_LEG_LINK_1*np.sin(q11)*(L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12))) + 2*L_LEG_LINK_1**2*np.cos(q11)*(np.sin(q11) - np.sin(q12)))*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2)/(4*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2)))/(2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**(1/2)*(1 - ((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2/(4*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)))**(1/2)) + (L_LEG_LINK_1*np.sin(q11)*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2))/(2*L_LEG_LINK_2_NEW*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)) - ((2*L_LEG_LINK_1*np.sin(q11)*(L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12))) + 2*L_LEG_LINK_1**2*np.cos(q11)*(np.sin(q11) - np.sin(q12)))*(L_BLSP/2 - (L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))/2)*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2))/(L_LEG_LINK_2_NEW*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2) - (L_LEG_LINK_1*(2*L_LEG_LINK_1*np.sin(q11)*(L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12))) + 2*L_LEG_LINK_1**2*np.cos(q11)*(np.sin(q11) - np.sin(q12)))*(np.sin(q11) - np.sin(q12))*(1 - ((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2/(4*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)))**(1/2))/(2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**(3/2))) - np.cos(LEG_THETA_1_OFF_ANGLE)*(((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))*(((2*L_LEG_LINK_1*np.sin(q11)*(L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12))) + 2*L_LEG_LINK_1**2*np.cos(q11)*(np.sin(q11) - np.sin(q12)))*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2))/(2*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)) - ((2*L_LEG_LINK_1*np.sin(q11)*(L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12))) + 2*L_LEG_LINK_1**2*np.cos(q11)*(np.sin(q11) - np.sin(q12)))*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2)/(4*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2)))/(2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**(1/2)*(1 - ((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2/(4*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)))**(1/2)) + ((2*L_LEG_LINK_1*np.sin(q11)*(L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12))) + 2*L_LEG_LINK_1**2*np.cos(q11)*(np.sin(q11) - np.sin(q12)))*(L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))*(1 - ((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2/(4*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)))**(1/2))/(2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**(3/2)) - (L_LEG_LINK_1*np.sin(q11)*(1 - ((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2/(4*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)))**(1/2))/((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**(1/2) + (L_LEG_LINK_1*np.cos(q11)*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2))/(2*L_LEG_LINK_2_NEW*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)) + (L_LEG_LINK_1*(2*L_LEG_LINK_1*np.sin(q11)*(L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12))) + 2*L_LEG_LINK_1**2*np.cos(q11)*(np.sin(q11) - np.sin(q12)))*(np.sin(q11) - np.sin(q12)))/(2*L_LEG_LINK_2_NEW*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)) - (L_LEG_LINK_1*(2*L_LEG_LINK_1*np.sin(q11)*(L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12))) + 2*L_LEG_LINK_1**2*np.cos(q11)*(np.sin(q11) - np.sin(q12)))*(np.sin(q11) - np.sin(q12))*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2))/(2*L_LEG_LINK_2_NEW*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2)))
             jac[0,2]=L_LEG_LINK_1*np.cos(q12)*np.cos(th3) + L_LEG_LINK_A22_WRIST*np.cos(th3)*(np.sin(LEG_THETA_1_OFF_ANGLE)*(((2*L_LEG_LINK_1*np.sin(q12)*(L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12))) + 2*L_LEG_LINK_1**2*np.cos(q12)*(np.sin(q11) - np.sin(q12)))*(L_BLSP/2 - (L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))/2))/(L_LEG_LINK_2_NEW*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)) + (L_LEG_LINK_1*np.cos(q12)*(1 - ((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2/(4*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)))**(1/2))/((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**(1/2) - (L_LEG_LINK_1*(np.sin(q11) - np.sin(q12))*(((2*L_LEG_LINK_1*np.sin(q12)*(L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12))) + 2*L_LEG_LINK_1**2*np.cos(q12)*(np.sin(q11) - np.sin(q12)))*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2))/(2*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)) - ((2*L_LEG_LINK_1*np.sin(q12)*(L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12))) + 2*L_LEG_LINK_1**2*np.cos(q12)*(np.sin(q11) - np.sin(q12)))*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2)/(4*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2)))/(2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**(1/2)*(1 - ((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2/(4*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)))**(1/2)) + (L_LEG_LINK_1*np.sin(q12)*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2))/(2*L_LEG_LINK_2_NEW*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)) - ((2*L_LEG_LINK_1*np.sin(q12)*(L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12))) + 2*L_LEG_LINK_1**2*np.cos(q12)*(np.sin(q11) - np.sin(q12)))*(L_BLSP/2 - (L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))/2)*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2))/(L_LEG_LINK_2_NEW*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2) - (L_LEG_LINK_1*(2*L_LEG_LINK_1*np.sin(q12)*(L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12))) + 2*L_LEG_LINK_1**2*np.cos(q12)*(np.sin(q11) - np.sin(q12)))*(np.sin(q11) - np.sin(q12))*(1 - ((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2/(4*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)))**(1/2))/(2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**(3/2))) - np.cos(LEG_THETA_1_OFF_ANGLE)*(((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))*(((2*L_LEG_LINK_1*np.sin(q12)*(L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12))) + 2*L_LEG_LINK_1**2*np.cos(q12)*(np.sin(q11) - np.sin(q12)))*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2))/(2*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)) - ((2*L_LEG_LINK_1*np.sin(q12)*(L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12))) + 2*L_LEG_LINK_1**2*np.cos(q12)*(np.sin(q11) - np.sin(q12)))*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2)/(4*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2)))/(2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**(1/2)*(1 - ((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2/(4*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)))**(1/2)) + ((2*L_LEG_LINK_1*np.sin(q12)*(L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12))) + 2*L_LEG_LINK_1**2*np.cos(q12)*(np.sin(q11) - np.sin(q12)))*(L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))*(1 - ((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2/(4*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)))**(1/2))/(2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**(3/2)) - (L_LEG_LINK_1*np.sin(q12)*(1 - ((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2/(4*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)))**(1/2))/((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**(1/2) + (L_LEG_LINK_1*np.cos(q12)*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2))/(2*L_LEG_LINK_2_NEW*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)) + (L_LEG_LINK_1*(2*L_LEG_LINK_1*np.sin(q12)*(L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12))) + 2*L_LEG_LINK_1**2*np.cos(q12)*(np.sin(q11) - np.sin(q12)))*(np.sin(q11) - np.sin(q12)))/(2*L_LEG_LINK_2_NEW*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)) - (L_LEG_LINK_1*(2*L_LEG_LINK_1*np.sin(q12)*(L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12))) + 2*L_LEG_LINK_1**2*np.cos(q12)*(np.sin(q11) - np.sin(q12)))*(np.sin(q11) - np.sin(q12))*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2))/(2*L_LEG_LINK_2_NEW*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2)))
             jac[1,0]=LEG_ORIGIN_X*np.cos(th3) + L_LEG_LINK_1*np.cos(th3)*np.sin(q12) - L_LEG_LINK_A22_WRIST*np.cos(th3)*(np.cos(LEG_THETA_1_OFF_ANGLE)*(((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))*(1 - ((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2/(4*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)))**(1/2))/((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**(1/2) - (L_LEG_LINK_1*(np.sin(q11) - np.sin(q12))*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2))/(2*L_LEG_LINK_2_NEW*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2))) + np.sin(LEG_THETA_1_OFF_ANGLE)*(((L_BLSP/2 - (L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))/2)*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2))/(L_LEG_LINK_2_NEW*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)) + (L_LEG_LINK_1*(np.sin(q11) - np.sin(q12))*(1 - ((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 - L_LEG_LINK_2**2 + L_LEG_LINK_2_NEW**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**2/(4*L_LEG_LINK_2_NEW**2*((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)))**(1/2))/((L_BLSP - L_LEG_LINK_1*(np.cos(q11) - np.cos(q12)))**2 + L_LEG_LINK_1**2*(np.sin(q11) - np.sin(q12))**2)**(1/2)))
