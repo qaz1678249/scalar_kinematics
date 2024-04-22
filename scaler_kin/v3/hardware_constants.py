@@ -6,13 +6,7 @@ class SCALER_climbing_consts_6DoF(old_hardware_constants.SCALER_climbing_consts_
     """ Class: SCALER_climbing_consts_6DoF
     This class contains the constant variables for the SCALER_v2 (Climbing Configuration w/ Gripper Kinematics)
     """
-    # For controller parameters (admittance control)
-    Md_const, Dd_const, Kd_const, Kf_const = 0.7, 250.0, 0.0, 1.0
-    Md = np.diag(np.array([Md_const,Md_const,Md_const,Md_const,Md_const,Md_const]))
-    Dd = np.diag(np.array([Dd_const,Dd_const,Dd_const,Dd_const,Dd_const,Dd_const]))
-    Kd = np.diag(np.array([Kd_const,Kd_const,Kd_const,Kd_const,Kd_const,Kd_const]))
-    Kf = np.diag(np.array([Kf_const,Kf_const,Kf_const,Kf_const,Kf_const,Kf_const]))
-    # Length of the center parallel link (i.e., the Battery Link which is always parallel to the two Rigid Body Links)
+
     # [units: mm]
     L_BATTERY = 150
 
@@ -568,5 +562,6 @@ class SCALER_climbing_consts_6DoF_gripper(old_hardware_constants.SCALER_climbing
     Tripod_Switch_BSpline = 9  # Use this gait to switch btw wall climbing and walking
     Tripod_Climb_2Wall_Stiffness_Model_Verification = 10  # This gait is for verification of stiffness model,
     # it lifts leg 1,3,5 on the air
+
 
 consts = {"SCALER_walking": SCALER_walking_consts, "SCALER_climbing_6DoF": SCALER_climbing_consts_6DoF, "SCALER_climbing_6DoF_gripper": SCALER_climbing_consts_6DoF_gripper}

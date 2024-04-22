@@ -10,7 +10,9 @@ import numpy as np
 
 from scaler_kin import utils_SCALER as Scaler_utils
 from scaler_kin import util
+
 from .hardware_constants import consts
+from scaler_kin.v2.SCALER_v2_Leg_6DOF_gripper import Leg as v2Leg
 from scaler_kin.wrap_to_pi import wrap_to_pi
 from scipy.optimize import fsolve
 
