@@ -1,4 +1,4 @@
-# SCALAR kinematics (ver 0.4.*)
+# SCALAR kinematics (ver 0.5.*)
 SCALAR_kinematics.py is the organized class for 6DoF, 4DoF or 3DoF or with gripper FK and IK.
 
 see example.py how to use the code
@@ -13,14 +13,27 @@ pip install git+https://github.com/qaz1678249/scalar_kinematics.git
 from scaler_kin import scaler_k  # imports the latest scaler kinematics
 from scaler_kin import Leg # import the leg class for 6DoF or with gripper
 ```
+---
 
-
-## import original or different kinematics configurations
+### import original or different kinematics configurations
 ```python
 from scaler_kin.v2 import scaler_k  # imports the v2 scaler kinematics
 from scaler_kin.v2 import Leg  # imports the leg class for 6DoF or with gripper
 ```
 
+---
+## Change since Ver. 0.5
+### SCALER Biped Leg Kinematics
+```python
+from scaler_kin.biped import scaler_k  # imports the biped scaler kinematics
+from scaler_kin.biped import Leg  # imports the leg class
+from scaler_kin.biped import hardware_constants  # import biped 
+```
+
+This kinematics has different parallel linkage lengths for two legs. 
+Thus hardware_constrants for those linkages are now numpy array instead of a scalar value.
+
+---
 ## Change since Ver. 0.4
 ### 4DoF FK and IK
 4DoF kinematics is added 
