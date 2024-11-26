@@ -14,7 +14,7 @@ with open('requirements.txt') as f:
 
 setup(
     name='scaler_kin',
-    version='0.5.0',
+    version='0.5.1',
     description='Scaler kinematics for 3DoF, 4DoF and 6DoF and camera arm kinematics',
     author='Yusuke Tanaka, Feng Xu,',
     license='LGPLv3',
